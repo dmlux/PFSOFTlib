@@ -22,10 +22,6 @@
 
 #include <pdsoft>
 
-#ifdef _OPENMP
-    #include <omp.h>
-#endif
-
 PDSOFT_NAMESPACE(FourierTransforms)
 
 /*!
@@ -122,7 +118,7 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
     d *= -1;
     d.transpose();
     
-    vector< complex< double > > sh(d.cols, vector< complex< double > >::type::COLUMN);
+    vector< complex< double > > sh(d.cols, vector< complex< double > >::COLUMN);
     
     // defining norm factor
     complex< double > norm((bandwidth * bw2) / constants< double >::pi, 0);
@@ -153,7 +149,7 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
             d *= -1;
             d.transpose();
             
-            sh = vector< complex< double > >(d.cols, vector< complex< double > >::type::COLUMN);
+            sh = vector< complex< double > >(d.cols, vector< complex< double > >::COLUMN);
             
             /*****************************************************************
              ** Make use of symmetries                                      **
@@ -244,7 +240,7 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
             DWT::wigner_d_matrix< double >(d, bandwidth, M, Mp);
             d.transpose();
             
-            sh = vector< complex< double > >(d.cols, vector< complex< double > >::type::COLUMN);
+            sh = vector< complex< double > >(d.cols, vector< complex< double > >::COLUMN);
             
             // case f_{M,Mp}
             for (cx_it e = sh.mem + sh.size - 1; e >= sh.mem; --e) { access::rw(*e) = norm * fc(bandwidth - (sh.mem + sh.size - e), M, Mp);     }

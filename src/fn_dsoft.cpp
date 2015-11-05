@@ -22,10 +22,6 @@
 
 #include <pdsoft>
 
-#ifdef _OPENMP
-    #include <omp.h>
-#endif
-
 PDSOFT_NAMESPACE(FourierTransforms)
 
 /*!
@@ -132,7 +128,7 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
     DWT::weighted_wigner_d_matrix(dw, bandwidth, 0, 0, weights);
     dw *= -1;
     
-    vector< complex< double > > s(bw2, vector< complex< double > >::type::COLUMN);
+    vector< complex< double > > s(bw2, vector< complex< double > >::COLUMN);
     
     // defining norm factor
     complex< double > norm(constants< double >::pi / (bandwidth * bw2), 0);

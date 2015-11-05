@@ -32,7 +32,7 @@
 #ifdef _OPENMP
 
     // include OpenMP headers for the OpenMP API
-    //#include <omp.h>
+    #include <omp.h>
 
     // Number of default used threads is the max
     // number of possible threads

@@ -56,11 +56,7 @@ template< typename T >
 class
 matrix< T, if_pod_type< T > >
 {
-    size_t r_inj;           //!< Row injection index
-    size_t c_inj;           //!< Column injection index
-    
 public:
-    // type declarations
     typedef T pod_type;     //!< The POD type of matrix elements
     
     // ivars
@@ -109,9 +105,7 @@ public:
 template< typename T >
 inline
 matrix< T, if_pod_type< T > >::matrix()
-    : r_inj(0)
-    , c_inj(0)
-    , rows(0)
+    : rows(0)
     , cols(0)
     , mem(nullptr)
 {}
@@ -140,9 +134,7 @@ matrix< T, if_pod_type< T > >::~matrix()
 template< typename T >
 inline
 matrix< T, if_pod_type< T > >::matrix(const size_t& m, const size_t& n)
-    : r_inj(0)
-    , c_inj(0)
-    , rows(m)
+    : rows(m)
     , cols(n)
 {
     size_t cap  = m * n;
@@ -162,8 +154,6 @@ inline
 matrix< T, if_pod_type< T > >::matrix(const size_t& mn)
     : rows(mn)
     , cols(mn)
-    , r_inj(0)
-    , c_inj(0)
 {
     size_t cap  = mn * mn;
     mem         = new T[cap];
@@ -181,9 +171,7 @@ matrix< T, if_pod_type< T > >::matrix(const size_t& mn)
 template< typename T >
 inline
 matrix< T, if_pod_type< T > >::matrix(const size_t& m, const size_t& n, const T& initial)
-    : r_inj(0)
-    , c_inj(0)
-    , rows(m)
+    : rows(m)
     , cols(n)
 {
     size_t cap  = m * n;
@@ -213,9 +201,7 @@ matrix< T, if_pod_type< T > >::matrix(const size_t& m, const size_t& n, const T&
 template< typename T >
 inline
 matrix< T, if_pod_type< T > >::matrix(const matrix< T >& A)
-    : r_inj(A.r_inj)
-    , c_inj(A.c_inj)
-    , rows(A.rows)
+    : rows(A.rows)
     , cols(A.cols)
 {
     size_t cap  = rows * cols;
@@ -240,9 +226,7 @@ matrix< T, if_pod_type< T > >::matrix(const matrix< T >& A)
 template< typename T >
 inline
 matrix< T, if_pod_type< T > >::matrix(matrix< T >&& A)
-    : r_inj(A.r_inj)
-    , c_inj(A.c_inj)
-    , rows(A.rows)
+    : rows(A.rows)
     , cols(A.cols)
 {
     const T* tmp = mem;

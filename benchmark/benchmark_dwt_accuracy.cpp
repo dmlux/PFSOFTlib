@@ -76,7 +76,7 @@ int main(int argc, const char** argv)
         {
             
             // create random coefficients
-            vector< complex< double > > fh(dt.cols, vector< complex< double > >::type::COLUMN);
+            vector< complex< double > > fh(dt.cols, vector< complex< double > >::COLUMN);
             rand(fh, -1, 1);
             
             // inverse DWT
@@ -114,7 +114,7 @@ int main(int argc, const char** argv)
         {
             
             // create random coefficients
-            vector< complex< double > > fh(dt.cols, vector< complex< double > >::type::COLUMN);
+            vector< complex< double > > fh(dt.cols, vector< complex< double > >::COLUMN);
             rand(fh, -1, 1);
             
             // inverse DWT
@@ -151,7 +151,7 @@ int main(int argc, const char** argv)
         {
             
             // create random coefficients
-            vector< complex< double > > fh(dt.cols, vector< complex< double > >::type::COLUMN);
+            vector< complex< double > > fh(dt.cols, vector< complex< double > >::COLUMN);
             rand(fh, -1, 1);
             
             // inverse DWT

@@ -6,10 +6,10 @@
 //
 //
 
-#include <uzlmath>
+#include <pdsoft>
 #include <stdio.h>
 
-using namespace uzlmath;
+using namespace pdsoft;
 using namespace FourierTransforms;
 
 int main(int argc, const char** argv)

@@ -50,8 +50,6 @@ template< typename T >
 class
 vector< complex< T >, if_pod_type< T > >
 {
-    size_t   inj;                       //!< Index for injection
-    
 public:
     // type declarations
     typedef T pod_type;                 //!< The POD type of matrix elements
@@ -64,7 +62,7 @@ public:
      *
      * @ingroup     vector
      */
-    enum class type
+    enum type
     {
         ROW,        //!< Represents a column vector of dimension \f$M\times 1\f$ where \f$M\in\mathbb{N}^+\f$
         COLUMN      //!< Represents a row vector of dimension \f$1\times M\f$ where \f$M\in\mathbb{N}^+\f$
@@ -79,9 +77,9 @@ public:
     const complex< T >* mem;    //!< vector data
     
     inline                                vector();
-    inline                                vector(const size_t& s, const enum type& type = type::ROW);
-    inline                                vector(const size_t& s, const T& initial, const enum type& type = type::ROW);
-    inline                                vector(const size_t& s, const complex< T >& initial, const enum type& type = type::ROW);
+    inline                                vector(const size_t& s, const enum type& type = vector< complex< T > >::ROW);
+    inline                                vector(const size_t& s, const T& initial, const enum type& type = vector< complex< T > >::ROW);
+    inline                                vector(const size_t& s, const complex< T >& initial, const enum type& type = vector< complex< T > >::ROW);
     inline                                vector(const vector< T >& vec);
     inline                                vector(const vector< complex< T > >& vec);
     inline                                vector(const vector< T >& vec, const enum type& type);
@@ -101,9 +99,6 @@ public:
     inline const vector< complex< T > >&  operator=(const vector< T >& v);
     inline const vector< complex< T > >&  operator=(const vector< complex< T > >& v);
     inline const vector< complex< T > >&  operator=(vector< complex< T > >&& v);
-    
-    inline const vector< complex< T > >&  operator*=(const vector< T >& v);
-    inline const vector< complex< T > >&  operator*=(const vector< complex< T > >& v);
     
     inline const vector< complex< T > >&  operator*=(const T& s);
     
@@ -126,16 +121,14 @@ template< typename T >
 inline
 vector< complex< T >, if_pod_type< T > >::vector()
     : size(0)
-    , type(type::ROW)
-    , inj(0)
+    , type(vector< complex< T > >::ROW)
     , mem(nullptr)
 {}
 
 template< typename T >
 inline
 vector< complex< T >, if_pod_type< T > >::vector(const size_t& s, const enum type& type)
-    : inj(0)
-    , size(s)
+    : size(s)
     , type(type)
 {
     mem = new complex< T >[s];
@@ -144,8 +137,7 @@ vector< complex< T >, if_pod_type< T > >::vector(const size_t& s, const enum typ
 template< typename T >
 inline
 vector< complex< T >, if_pod_type< T > >::vector(const size_t& s, const T& initial, const enum type& type)
-    : inj(0)
-    , size(s)
+    : size(s)
     , type(type)
 {
     mem = new complex< T >[s];
@@ -162,7 +154,6 @@ inline
 vector< complex< T >, if_pod_type< T > >::vector(const size_t& s, const complex< T >& initial, const enum type& type)
     : size(s)
     , type(type)
-    , inj(0)
 {
     mem = new complex< T >[s];
     
@@ -178,7 +169,6 @@ inline
 vector< complex< T >, if_pod_type< T > >::vector(const vector< T >& vec)
     : size(vec.size)
     , type(vec.type)
-    , inj(vec.inj)
 {
     mem = new complex< T >[vec.size];
     
@@ -192,8 +182,7 @@ vector< complex< T >, if_pod_type< T > >::vector(const vector< T >& vec)
 template< typename T >
 inline
 vector< complex< T >, if_pod_type< T > >::vector(const vector< complex< T > >& vec)
-    : inj(vec.inj)
-    , size(vec.size)
+    : size(vec.size)
     , type(vec.type)
 {
     mem = new complex< T >[vec.size];
@@ -205,7 +194,6 @@ inline
 vector< complex< T >, if_pod_type< T > >::vector(const vector< T >& vec, const enum type& type)
     : size(vec.size)
     , type(type)
-    , inj(vec.inj)
 {
     mem = new complex< T >[vec.size];
     
@@ -221,7 +209,6 @@ inline
 vector< complex< T >, if_pod_type< T > >::vector(const vector< complex< T > >& vec, const enum type& t)
     : size(vec.size)
     , type(type)
-    , inj(vec.inj)
 {
     mem = new complex< T >[size];
     
@@ -234,8 +221,7 @@ vector< complex< T >, if_pod_type< T > >::vector(const vector< complex< T > >& v
 template< typename T >
 inline
 vector< complex< T >, if_pod_type< T > >::vector(vector< complex< T > >&& vec)
-    : inj(vec.inj)
-    , size(vec.size)
+    : size(vec.size)
     , type(vec.type)
 {
     const complex< T >* tmp = mem;
@@ -427,7 +413,7 @@ template< typename T >
 inline
 void vector< complex< T >, if_pod_type< T > >::transpose()
 {
-    type = (type == type::ROW ? type::COLUMN : type::ROW);
+    type = (type == vector< complex< T > >::ROW ? vector< complex< T > >::COLUMN : vector< complex< T > >::ROW);
 }
 
 
@@ -487,7 +473,7 @@ std::ostream& operator<<(std::ostream& o, const vector< complex< S > >& v)
     }
     
     // prepare output and print
-    if (v.type == vector< complex< S > >::type::ROW)
+    if (v.type == vector< complex< S > >::ROW)
     {
         for (i = 0; i < v.size; ++i)
         {

@@ -50,9 +50,6 @@ template< typename T >
 class
 matrix< complex< T >, if_pod_type< T > >
 {
-    size_t r_inj;                   //!< Row injection index
-    size_t c_inj;                   //!< Column injection index
-    
 public:
     // type declarations
     typedef T pod_type;             //!< The POD type of matrix elements
@@ -120,11 +117,9 @@ matrix< complex< T >, if_pod_type< T > >::~matrix()
 template< typename T >
 inline
 matrix< complex< T >, if_pod_type< T > >::matrix()
-: r_inj(0)
-, c_inj(0)
-, rows(0)
-, cols(0)
-, mem(nullptr)
+    : rows(0)
+    , cols(0)
+    , mem(nullptr)
 {}
 
 /*!
@@ -138,10 +133,8 @@ matrix< complex< T >, if_pod_type< T > >::matrix()
 template< typename T >
 inline
 matrix< complex< T >, if_pod_type< T > >::matrix(const size_t& m, const size_t& n)
-: r_inj(0)
-, c_inj(0)
-, rows(m)
-, cols(n)
+    : rows(m)
+    , cols(n)
 {
     size_t cap  = m * n;
     mem         = new complex< T >[cap];
@@ -157,10 +150,8 @@ matrix< complex< T >, if_pod_type< T > >::matrix(const size_t& m, const size_t& 
 template< typename T >
 inline
 matrix< complex< T >, if_pod_type< T > >::matrix(const size_t& mn)
-: rows(mn)
-, cols(mn)
-, r_inj(0)
-, c_inj(0)
+    : rows(mn)
+    , cols(mn)
 {
     size_t cap  = mn * mn;
     mem         = new complex< T >[cap];
@@ -178,10 +169,8 @@ matrix< complex< T >, if_pod_type< T > >::matrix(const size_t& mn)
 template< typename T >
 inline
 matrix< complex< T >, if_pod_type< T > >::matrix(const size_t& m, const size_t& n, const complex< T >& initial)
-: rows(m)
-, cols(n)
-, r_inj(0)
-, c_inj(0)
+    : rows(m)
+    , cols(n)
 {
     size_t cap  = m * n;
     mem         = new complex< T >[cap];
@@ -205,10 +194,8 @@ matrix< complex< T >, if_pod_type< T > >::matrix(const size_t& m, const size_t& 
 template< typename T >
 inline
 matrix< complex< T >, if_pod_type< T > >::matrix(const matrix< complex< T > >& A)
-: rows(A.rows)
-, cols(A.cols)
-, r_inj(A.r_inj)
-, c_inj(A.c_inj)
+    : rows(A.rows)
+    , cols(A.cols)
 {
     size_t cap  = rows * cols;
     mem         = new complex< T >[cap];
@@ -229,10 +216,8 @@ matrix< complex< T >, if_pod_type< T > >::matrix(const matrix< complex< T > >& A
 template< typename T >
 inline
 matrix< complex< T >, if_pod_type< T > >::matrix(const matrix< T >& A)
-: rows(A.rows)
-, cols(A.cols)
-, r_inj(A.r_inj)
-, c_inj(A.c_inj)
+    : rows(A.rows)
+    , cols(A.cols)
 {
     size_t cap  = rows * cols;
     mem         = new complex< T >[cap];
@@ -256,10 +241,8 @@ matrix< complex< T >, if_pod_type< T > >::matrix(const matrix< T >& A)
 template< typename T >
 inline
 matrix< complex< T >, if_pod_type< T > >::matrix(matrix< complex< T > >&& A)
-: rows(A.rows)
-, cols(A.cols)
-, r_inj(A.r_inj)
-, c_inj(A.c_inj)
+    : rows(A.rows)
+    , cols(A.cols)
 {
     complex< T >* tmp = mem;
     mem                = A.mem;
