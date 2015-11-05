@@ -1,0 +1,48 @@
+//
+//  Created by Denis-Michael Lux on 11.01.15.
+//
+//  This software may be modified and distributed under the terms
+//  of the BSD license. See the LICENSE file for details.
+//
+
+#ifndef PDSOFT_INCLUDES
+#define PDSOFT_INCLUDES
+
+/*- Standard libraries -*/
+#include <iostream>     // std::cout, std::err, ...
+#include <sstream>      // string streams
+#include <iomanip>      // formatting std:: streams
+
+#include <cmath>        // abs, min, max, ...
+#include <sys/time.h>   // timeval
+
+#include <string.h>     // memcpy, memset
+
+#include <random>       // for random C++11 library
+
+/*- Compiler configuration       -*/
+#include "PDSOFTlib_headers/compiler_config.hpp"
+
+/*- Forward declarations         -*/
+#include "PDSOFTlib_headers/forward_declarations.hpp"
+
+/*- Wrapper interface            -*/
+#include "PDSOFTlib_headers/fftw_wrapper.hpp"
+
+/*- Classes                      -*/
+#include "PDSOFTlib_headers/complex.hpp"
+#include "PDSOFTlib_headers/grid3D_cx.hpp"
+#include "PDSOFTlib_headers/matrix.hpp"
+#include "PDSOFTlib_headers/matrix_cx.hpp"
+#include "PDSOFTlib_headers/stopwatch.hpp"
+#include "PDSOFTlib_headers/dsoft_fourier_coefficients.hpp"
+#include "PDSOFTlib_headers/random.hpp"
+#include "PDSOFTlib_headers/vector.hpp"
+#include "PDSOFTlib_headers/vector_cx.hpp"
+
+/*- Function implementations     -*/
+#include "PDSOFTlib_headers/fn_fourier_transforms.hpp"
+#include "PDSOFTlib_headers/fn_dwt.hpp"
+#include "PDSOFTlib_headers/fn_flip.hpp"
+
+#endif
