@@ -60,32 +60,29 @@ template< typename T >
 class complex
 {
 public:
-    T re;   //!< The real part of the complex number
-    T im;   //!< The imaginary part of the complex number
+    typedef T pod_type;
     
-    inline                     ~complex();
-    inline                      complex();
+    pod_type re;   //!< The real part of the complex number
+    pod_type im;   //!< The imaginary part of the complex number
     
-    inline                      complex(const T real_imag);
-    inline                      complex(const T real, const T imag);
+    inline                            ~complex();
+    inline                             complex();
+    inline                             complex(const pod_type real_imag);
+    inline                             complex(const pod_type real, const pod_type imag);
+    inline                             complex(const complex< pod_type >& c);
     
-    inline                      complex(const complex< T >& c);
+    inline       pod_type              abs() const;
+    inline       void                  polar(const pod_type& rho, const pod_type& theta = 0);
     
-    inline       T              abs() const;
-    inline       T              arg() const;
-    inline       T              norm() const;
+    inline       complex< pod_type >   operator+(const complex< pod_type >& rhs);
+    inline       complex< pod_type >   operator-(const complex< pod_type >& rhs);
+    inline       complex< pod_type >   operator*(const complex< pod_type >& rhs);
+    inline       complex< pod_type >   operator/(const complex< pod_type >& rhs);
     
-    inline       void           polar(const T& rho, const T& theta = 0);
-    
-    inline       complex< T >   operator+(const complex< T >& rhs);
-    inline       complex< T >   operator-(const complex< T >& rhs);
-    inline       complex< T >   operator*(const complex< T >& rhs);
-    inline       complex< T >   operator/(const complex< T >& rhs);
-    
-    inline const complex< T >&  operator+=(const complex< T >& rhs);
-    inline const complex< T >&  operator-=(const complex< T >& rhs);
-    inline const complex< T >&  operator*=(const complex< T >& rhs);
-    inline const complex< T >&  operator/=(const complex< T >& rhs);
+    inline const complex< pod_type >&  operator+=(const complex< pod_type >& rhs);
+    inline const complex< pod_type >&  operator-=(const complex< pod_type >& rhs);
+    inline const complex< pod_type >&  operator*=(const complex< pod_type >& rhs);
+    inline const complex< pod_type >&  operator/=(const complex< pod_type >& rhs);
     
     template< typename U > inline       complex< T >  operator+(const U& rhs);
     template< typename U > inline       complex< T >  operator-(const U& rhs);
@@ -208,62 +205,6 @@ T complex< T >::abs() const
     {
         return sqrtf(static_cast< float >(re * re) + static_cast< float >(im * im));
     }
-}
-
-/*!
- * @brief           Returns the argument of the current complex number.
- * @details         The argument of a complex number \f$\underline{z} = x+yi\f$
- *                  is defined as \f$atan2(z)\f$
- *                  \f[
- *                      \varphi=\arg(\underline{z})=\begin{cases}
- *                          \arctan(\frac{y}{x}) & \mathrm{if}\;x>0\\
- *                          \arctan(\frac{y}{x}) + \pi & \mathrm{if }\;x<0\;\mathrm{ and }\;y\geq 0\\
- *                          \arctan(\frac{y}{x}) - \pi & \mathrm{if }\;x<0\;\mathrm{ and }\;y<0\\
- *                          \frac{\pi}{2} & \mathrm{if }\;x=0\;\mathrm{ and }\;y>0\\
- *                          -\frac{\pi}{2} & \mathrm{if }\;x=0\;\mathrm{ and }\;y<0\\
- *                          \mathrm{indeterminate} & \mathrm{if }\;x=0\;\mathrm{ and }\;y=0
- *                      \end{cases}
- *                  \f]
- *
- * @return          The argument of the current complex number
- */
-template< typename T >
-inline
-T complex< T >::arg() const
-{
-    if ( same_type< T, double >::value )
-    {
-        return atan2(im, re);
-    }
-    else if ( same_type< T, float >::value )
-    {
-        return atan2f(im, re);
-    }
-    else if ( same_type< T, long double >::value )
-    {
-        return atan2l(im, re);
-    }
-    else
-    {
-        return atan2f(static_cast< float >(im), static_cast< float >(re));
-    }
-}
-
-/*!
- * @brief           Returns the norm of the current complex number.
- * @details         The norm of a complex number \f$\underline{z}\f$ is
- *                  defined as
- *                  \f[
- *                      \Re(\underline{z})^2 + \Im(\underline{z})^2
- *                  \f]
- *
- * @return          The norm of the current complex number.
- */
-template< typename T >
-inline
-T complex< T >::norm() const
-{
-    return re * re + im * im;
 }
 
 

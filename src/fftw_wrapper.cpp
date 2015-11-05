@@ -27,11 +27,6 @@
 /*- including function wrapper    -*/
 #include <pdsoft>
 
-/*- including OpenMP              -*/
-#ifdef _OPENMP
-    #include <omp.h>
-#endif
-
 /*!
  * @brief           The namespace containg all includes of datatypes, functions and 
  *                  other namespaces for mathmatical computation from the **UZLMath**

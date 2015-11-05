@@ -16,7 +16,7 @@
 #   along with PDSOFT.  If not, see <http://www.gnu.org/licenses/>.
 
 ADD_EXECUTABLE(
-    sofft_test
-    ${PROJECT_SOURCE_DIR}/sofft/sofft_test.cpp
+    example
+    ${PROJECT_SOURCE_DIR}/examples/example
 )
-TARGET_LINK_LIBRARIES( sofft_test PDSOFT )
+TARGET_LINK_LIBRARIES( example PDSOFT )

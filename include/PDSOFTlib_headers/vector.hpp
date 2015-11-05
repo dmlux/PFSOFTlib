@@ -75,7 +75,7 @@ public:
     
     // ivars
     const size_t size;      //!< size of vector
-    const type vec_type;    //!< type of vector
+    const type type;        //!< type of vector
     const pod_type* mem;    //!< vector data
     
     // methods
@@ -121,7 +121,7 @@ template< typename T >
 inline
 vector< T, if_pod_type< T > >::vector()
     : size(0)
-    , vec_type(type::ROW)
+    , type(vector< T >::ROW)
     , mem(nullptr)
 {}
 
@@ -139,7 +139,7 @@ template< typename T >
 inline
 vector< T, if_pod_type< T > >::vector(const size_t& s, const enum type& type)
     : size(s)
-    , vec_type(type)
+    , type(type)
 {
     mem = new T[s];
 }
@@ -159,7 +159,7 @@ template< typename T >
 inline
 vector< T, if_pod_type< T > >::vector(const size_t& s, const T& initial, const enum type& type)
     : size(s)
-    , vec_type(type)
+    , type(type)
 {
     mem = new T[s];
     
@@ -188,7 +188,7 @@ template< typename T >
 inline
 vector< T, if_pod_type< T > >::vector(const vector< T >& vec)
     : size(vec.size)
-    , vec_type(vec.type)
+    , type(vec.type)
 {
     mem = new T[size];
     
@@ -213,7 +213,7 @@ template< typename T >
 inline
 vector< T, if_pod_type< T > >::vector(const vector< T >& vec, const enum type& type)
     : size(vec.size)
-    , vec_type(type)
+    , type(type)
 {
     mem = new T[size];
     
@@ -235,7 +235,7 @@ template< typename T >
 inline
 vector< T, if_pod_type< T > >::vector(vector< T >&& vec)
     : size(vec.size)
-    , vec_type(vec.type)
+    , type(vec.type)
 {
     const T* tmp = mem;
     mem           = vec.mem;
@@ -268,7 +268,7 @@ template< typename T >
 inline
 vector< T > vector< T, if_pod_type< T > >::operator*(const T& s)
 {
-    vector< T > result(size, vec_type);
+    vector< T > result(size, type);
     
     size_t i;
     for (i = 0; i < size; ++i)
@@ -293,7 +293,7 @@ template< typename T >
 inline
 vector< complex< T > > vector< T, if_pod_type< T > >::operator*(const complex< T >& s)
 {
-    vector< complex< T > > result(size, vec_type);
+    vector< complex< T > > result(size, type);
     
     size_t i;
     for (i = 0; i < size; ++i)
@@ -364,8 +364,8 @@ const vector< T >& vector< T, if_pod_type< T > >::operator=(const vector< T >& v
         return *this;
     }
     
-    size     = v.size;
-    vec_type = v.vec_type;
+    size = v.size;
+    type = v.type;
     
     delete [] mem;
     mem = new T[size];
@@ -393,10 +393,10 @@ const vector< T >& vector< T, if_pod_type< T > >::operator=(vector< T >&& v)
         return *this;
     }
     
-    size     = v.size;
-    vec_type = v.vec_type;
+    size    = v.size;
+    type    = v.type;
     
-    T* tmp = mem;
+    T* tmp  = mem;
     mem     = v.mem;
     v.mem   = tmp;
     
@@ -548,14 +548,7 @@ template< typename T >
 inline
 void vector< T, if_pod_type< T > >::transpose()
 {
-    if (vec_type == vector< T >::ROW)
-    {
-        vec_type = vector< T >::COLUMN;
-    }
-    else
-    {
-        vec_type = vector< T >::ROW;
-    }
+    type = (type == vector< T >::ROW) ? vector< T >::COLUMN : vector< T >::ROW;
 }
 
 

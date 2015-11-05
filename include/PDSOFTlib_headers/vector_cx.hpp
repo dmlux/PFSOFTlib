@@ -413,7 +413,7 @@ template< typename T >
 inline
 void vector< complex< T >, if_pod_type< T > >::transpose()
 {
-    type = (type == vector< complex< T > >::ROW ? vector< complex< T > >::COLUMN : vector< complex< T > >::ROW);
+    type = (type == vector< complex< T > >::ROW) ? vector< complex< T > >::COLUMN : vector< complex< T > >::ROW;
 }
 
 
