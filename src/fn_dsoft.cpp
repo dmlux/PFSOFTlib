@@ -1,28 +1,28 @@
 //
 //  fn_dsoft.cpp
-//  PDSOFTlib
+//  PSOFFTlib
 //
 //   Created by Denis-Michael Lux on 05. November 2015.
 //
-//   This file is part of PDSOFTlib.
+//   This file is part of PSOFFTlib.
 //
-//   PDSOFTlib is free software: you can redistribute it and/or modify
+//   PSOFFTlib is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
 //   (at your option) any later version.
 //
-//   PDSOFTlib is distributed in the hope that it will be useful,
+//   PSOFFTlib is distributed in the hope that it will be useful,
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //   GNU General Public License for more details.
 //
 //   You should have received a copy of the GNU General Public License
-//   along with PDSOFTlib.  If not, see <http://www.gnu.org/licenses/>.
+//   along with PSOFFTlib.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <pdsoft>
+#include <psofft>
 
-PDSOFT_NAMESPACE(FourierTransforms)
+PSOFFT_NAMESPACE(FourierTransforms)
 
 /*!
  * @brief           The DSOFT (<b>S0</b>(3) <b>F</b>ourier <b>T</b>ransform)
@@ -81,14 +81,14 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
     // Check if the grid has same size in each dimension
     if (sample.rows != sample.cols || sample.rows != sample.lays)
     {
-        pdsoft_warning("%s", "all DSOFT sample grid dimensions should be equal.");
+        psofft_warning("%s", "all DSOFT sample grid dimensions should be equal.");
         return;
     }
     
     // Check if grid has odd dimensions
     if (sample.rows & 1)
     {
-        pdsoft_warning("%s", "DSOFT sample grid dimensions are not even.");
+        psofft_warning("%s", "DSOFT sample grid dimensions are not even.");
         return;
     }
     
@@ -101,7 +101,7 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
     // Check if Fourier coefficients container dimension matches sample dimension
     if (bandwidth != fc.bandwidth)
     {
-        pdsoft_warning("%s", "DSOFT Fourier coefficients container bandwidth does not match to sample grid bandwidth.");
+        psofft_warning("%s", "DSOFT Fourier coefficients container bandwidth does not match to sample grid bandwidth.");
         return;
     }
     
@@ -109,7 +109,7 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
     #ifndef _OPENMP
     if (threads != 1)
     {
-        pdsoft_warning("%s", "compiler does not support OpenMP. Changing the number of threads for the DSOFT has no effect.");
+        psofft_warning("%s", "compiler does not support OpenMP. Changing the number of threads for the DSOFT has no effect.");
     }
     #endif
     
@@ -136,13 +136,10 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
     // defining needed indices
     int MMp, M, Mp;
     
-    // defining type for following iterations
-    typedef const complex< double >* cx_it;
-    
     // DWT for M = 0, M' = 0
-    for (cx_it e = s.mem + bw2 - 1; e >= s.mem; --e)       { access::rw(*e) = sample(0, 0, e - s.mem);                   }
+    for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(0, 0, e - s.begin());                          }
     vector< complex< double > > sh = dw * s;
-    for (cx_it e = sh.mem + sh.size - 1; e >= sh.mem; --e) { fc(bandwidth - (sh.mem + sh.size - e), 0, 0) = norm * (*e); }
+    for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), 0, 0) = norm * *e;          }
     
     /*****************************************************************
      ** Iterate over all combinations of M and M'                   **
@@ -161,49 +158,49 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
              ** Make use of symmetries                                      **
              *****************************************************************/
             // case f_{M,0}
-            for (cx_it e = s.mem + bw2 - 1; e >= s.mem; --e)       { access::rw(*e) = sample(0, M, e - s.mem);                       }
+            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(0, M, e - s.begin());                  }
             sh = dw * s;
-            for (cx_it e = sh.mem + sh.size - 1; e >= sh.mem; --e) { fc(bandwidth - (sh.mem + sh.size - e), M, 0) = norm * (*e);     }
+            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth-(sh.end()-e), M, 0) = norm * *e;      }
             
             // case f_{0,M}
-            for (cx_it e = s.mem + bw2 - 1; e >= s.mem; --e)       { access::rw(*e) = sample(M, 0, e - s.mem);                       }
+            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(M, 0, e - s.begin());                  }
             sh = dw * s;
-            if  (M & 1)                                            { sh *= -1;                                                       }
-            for (cx_it e = sh.mem + sh.size - 1; e >= sh.mem; --e) { fc(bandwidth - (sh.mem + sh.size - e), 0, M) = norm * (*e);     }
+            if  (M & 1)                                                                    { sh *= -1;                                          }
+            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth-(sh.end()-e), 0, M) = norm * *e;      }
             
             // case f_{-M,0}
             fliplr(dw);
-            for (cx_it e = s.mem + bw2 - 1; e >= s.mem; --e)       { access::rw(*e) = sample(0, bw2 - M, e - s.mem);                 }
+            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(0, bw2 - M, e - s.begin());            }
             sh = dw * s;
             if (M & 1)  // if M is odd
             {
-                for (cx_it e = sh.mem; e < sh.mem + sh.size; e += 2)     { access::rw(*e) *= -1;                                     }
+                for (vector< complex< double > >::iterator e = sh.begin(); e < sh.end(); e += 2)     { *e *= -1;                                }
             }
             else        // if M is even
             {
-                for (cx_it e = sh.mem + 1; e < sh.mem + sh.size; e += 2) { access::rw(*e) *= -1;                                     }
+                for (vector< complex< double > >::iterator e = sh.begin() + 1; e < sh.end(); e += 2) { *e *= -1;                                }
             }
-            for (cx_it e = sh.mem + sh.size - 1; e >= sh.mem; --e) { fc(bandwidth - (sh.mem + sh.size - e), -M, 0) = norm * (*e);    }
+            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth-(sh.end()-e), -M, 0) = norm * *e;     }
             
             // case f_{0,-M}
-            for (cx_it e = s.mem + bw2 - 1; e >= s.mem; --e)       { access::rw(*e) = sample(bw2 - M, 0, e - s.mem);                 }
+            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(bw2 - M, 0, e - s.begin());            }
             sh = dw * s;
-            for (cx_it e = sh.mem + 1; e < sh.mem + sh.size; e+=2) { access::rw(*e) *= -1;                                           }
-            for (cx_it e = sh.mem + sh.size - 1; e >= sh.mem; --e) { fc(bandwidth - (sh.mem + sh.size - e), 0, -M) = norm * (*e);    }
+            for (vector< complex< double > >::iterator e = sh.begin()+1; e < sh.end(); e += 2) { *e *= -1;                                      }
+            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth-(sh.end()-e), 0, -M) = norm * *e;     }
             
             // get new wigner matrix
             DWT::weighted_wigner_d_matrix(dw, bandwidth, M, M, weights);
             dw *= -1;
             
             // case f_{M, M}
-            for (cx_it e = s.mem + bw2 - 1; e >= s.mem; --e)       { access::rw(*e) = sample(M, M, e - s.mem);                       }
+            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(M, M, e - s.begin());                  }
             sh = dw * s;
-            for (cx_it e = sh.mem + sh.size - 1; e >= sh.mem; --e) { fc(bandwidth - (sh.mem + sh.size - e), M, M) = norm * (*e);     }
+            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth-(sh.end()-e), M, M) = norm * *e;      }
             
             // case f_{-M, -M}
-            for (cx_it e = s.mem + bw2 - 1; e >= s.mem; --e)       { access::rw(*e) = sample(bw2 - M, bw2 - M, e - s.mem);           }
+            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(bw2 - M, bw2 - M, e - s.begin());      }
             sh = dw * s;
-            for (cx_it e = sh.mem + sh.size - 1; e >= sh.mem; --e) { fc(bandwidth - (sh.mem + sh.size - e), -M, -M) = norm * (*e);   }
+            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth-(sh.end()-e), -M, -M) = norm * *e;    }
             
             // Modify dw for the last two cases. flip matrix from left to right and negate signs of
             // every second row with odd row indices.
@@ -211,14 +208,14 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
             
             // A little arithmetic error is occuring in the following calculation... I do not exactly know why
             // case f_{M, -M}
-            for (cx_it e = s.mem + bw2 - 1; e >= s.mem; --e)       { access::rw(*e) = sample(bw2 - M, M, e - s.mem);                 }
+            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(bw2 - M, M, e - s.begin());            }
             sh = dw * s;
-            for (cx_it e = sh.mem + sh.size - 1; e >= sh.mem; --e) { fc(bandwidth - (sh.mem + sh.size - e), M, -M) = norm * (*e);    }
+            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth-(sh.end()-e), M, -M) = norm * *e;     }
             
             // case f_{-M, M}
-            for (cx_it e = s.mem + bw2 - 1; e >= s.mem; --e)       { access::rw(*e) = sample(M, bw2 - M, e - s.mem);                 }
+            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(M, bw2 - M, e - s.begin());            }
             sh = dw * s;
-            for (cx_it e = sh.mem + sh.size - 1; e >= sh.mem; --e) { fc(bandwidth - (sh.mem + sh.size - e), -M, M) = norm * (*e);    }
+            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth-(sh.end()-e), -M, M) = norm * *e;     }
         }
         
         // Fused two loops per hand
@@ -243,28 +240,28 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
             DWT::weighted_wigner_d_matrix(dw, bandwidth, M, Mp, weights);
             
             // case f_{M, Mp}
-            for (cx_it e = s.mem + bw2 - 1; e >= s.mem; --e)       { access::rw(*e) = sample(Mp, M, e - s.mem);                      }
+            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(Mp, M, e - s.begin());                 }
             sh  = dw * s;
-            for (cx_it e = sh.mem; e < sh.mem + sh.size; ++e)      { access::rw(*e) *= -1;                                           }
-            for (cx_it e = sh.mem + sh.size - 1; e >= sh.mem; --e) { fc(bandwidth - (sh.mem + sh.size - e), M, Mp) = norm * (*e);    }
+            sh *= -1;
+            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth-(sh.end()-e), M, Mp) = norm * *e;     }
             
             // case f_{Mp, M}
-            for (cx_it e = s.mem + bw2 - 1; e >= s.mem; --e)       { access::rw(*e) = sample(M, Mp, e - s.mem);                      }
+            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(M, Mp, e - s.begin());                 }
             sh = dw * s;
-            if  (!((M - Mp) & 1))                                  { sh *= -1;                                                       }
-            for (cx_it e = sh.mem + sh.size - 1; e >= sh.mem; --e) { fc(bandwidth - (sh.mem + sh.size - e), Mp, M) = norm * (*e);    }
+            if  (!((M - Mp) & 1))                                                          { sh *= -1;                                          }
+            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth-(sh.end()-e), Mp, M) = norm * *e;     }
             
             // case f_{-M, -Mp}
-            for (cx_it e = s.mem + bw2 - 1; e >= s.mem; --e)       { access::rw(*e) = sample(bw2 - Mp, bw2 - M, e - s.mem);          }
+            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(bw2 - Mp, bw2 - M, e - s.begin());     }
             sh = dw * s;
-            if  (!((M - Mp) & 1))                                  { sh *= -1;                                                       }
-            for (cx_it e = sh.mem + sh.size - 1; e >= sh.mem; --e) { fc(bandwidth - (sh.mem + sh.size - e), -M, -Mp) = norm * (*e);  }
+            if  (!((M - Mp) & 1))                                                          { sh *= -1;                                          }
+            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth-(sh.end()-e), -M, -Mp) = norm * *e;   }
             
             // case f_{-Mp, -M}
-            for (cx_it e = s.mem + bw2 - 1; e >= s.mem; --e)       { access::rw(*e) = sample(bw2 - M, bw2 - Mp, e - s.mem);          }
+            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(bw2 - M, bw2 - Mp, e - s.begin());     }
             sh  = dw * s;
-            for (cx_it e = sh.mem; e < sh.mem + sh.size; ++e)      { access::rw(*e) *= -1;                                           }
-            for (cx_it e = sh.mem + sh.size - 1; e >= sh.mem; --e) { fc(bandwidth - (sh.mem + sh.size - e), -Mp, -M) = norm * (*e);  }
+            sh *= -1;
+            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth-(sh.end()-e), -Mp, -M) = norm * *e;   }
             
             // modify wigner d-matrix for next four cases. This just works because the weight
             // function is also symmetric like the wigner-d matrix. flip left-right the dw
@@ -272,32 +269,32 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
             fliplr_ne2nderow(dw);
             
             // case f_{Mp, -M}
-            for (cx_it e = s.mem + bw2 - 1; e >= s.mem; --e)       { access::rw(*e) = sample(bw2 - M, Mp, e - s.mem);                }
+            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(bw2 - M, Mp, e - s.begin());           }
             sh = dw * s;
-            for (cx_it e = sh.mem + sh.size - 1; e >= sh.mem; --e) { fc(bandwidth - (sh.mem + sh.size - e), Mp, -M) = norm * (*e);   }
+            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth-(sh.end()-e), Mp, -M) = norm * *e;    }
             
             // case f_{M, -Mp}
-            for (cx_it e = s.mem + bw2 - 1; e >= s.mem; --e)       { access::rw(*e) = sample(bw2 - Mp, M, e - s.mem);                }
+            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(bw2 - Mp, M, e - s.begin());           }
             sh = dw * s;
-            for (cx_it e = sh.mem + sh.size - 1; e >= sh.mem; --e) { fc(bandwidth - (sh.mem + sh.size - e), M, -Mp) = norm * (*e);   }
+            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth-(sh.end()-e), M, -Mp) = norm * *e;    }
             
             // alter signs
             if ((M - Mp) & 1)
             {
-                for (const double* e = dw.mem; e < dw.mem + dw.rows * dw.cols; ++e) { access::rw(*e) *= -1;                          }
+                for (const double* e = dw.mem; e < dw.mem + dw.rows * dw.cols; ++e)        { access::rw(*e) *= -1;                              }
             }
             
             // case f_{-Mp, M}
-            for (cx_it e = s.mem + bw2 - 1; e >= s.mem; --e)       { access::rw(*e) = sample(M, bw2 - Mp, e - s.mem);                }
+            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(M, bw2 - Mp, e - s.begin());           }
             sh = dw * s;
-            for (cx_it e = sh.mem + sh.size - 1; e >= sh.mem; --e) { fc(bandwidth - (sh.mem + sh.size - e), -Mp, M) = norm * (*e);   }
+            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth-(sh.end()-e), -Mp, M) = norm * *e;    }
             
             // case f_{-M, Mp}
-            for (cx_it e = s.mem + bw2 - 1; e >= s.mem; --e)       { access::rw(*e) = sample(Mp, bw2 - M, e - s.mem);                }
+            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(Mp, bw2 - M, e - s.begin());           }
             sh = dw * s;
-            for (cx_it e = sh.mem + sh.size - 1; e >= sh.mem; --e) { fc(bandwidth - (sh.mem + sh.size - e), -M, Mp) = norm * (*e);   }
+            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth-(sh.end()-e), -M, Mp) = norm * *e;    }
         }
     }
 }
 
-PDSOFT_NAMESPACE_END
+PSOFFT_NAMESPACE_END

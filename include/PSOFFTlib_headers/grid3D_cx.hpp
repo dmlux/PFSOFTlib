@@ -1,29 +1,29 @@
 //
 //  grid3D_cx.hpp
-//  PDSOFTlib
+//  PSOFFTlib
 //
 //   Created by Denis-Michael Lux on 05. November 2015.
 //
-//   This file is part of PDSOFTlib.
+//   This file is part of PSOFFTlib.
 //
-//   PDSOFTlib is free software: you can redistribute it and/or modify
+//   PSOFFTlib is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
 //   (at your option) any later version.
 //
-//   PDSOFTlib is distributed in the hope that it will be useful,
+//   PSOFFTlib is distributed in the hope that it will be useful,
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //   GNU General Public License for more details.
 //
 //   You should have received a copy of the GNU General Public License
-//   along with PDSOFTlib.  If not, see <http://www.gnu.org/licenses/>.
+//   along with PSOFFTlib.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef PDSOFTlib_grid3D_cx_hpp
-#define PDSOFTlib_grid3D_cx_hpp
+#ifndef PSOFFTlib_grid3D_cx_hpp
+#define PSOFFTlib_grid3D_cx_hpp
 
-PDSOFT_BEGIN
+PSOFFT_BEGIN
 
 /*!
  * @ingroup     grid3D
@@ -526,6 +526,6 @@ std::ostream& operator<<(std::ostream& o, const grid3D< complex< S > >& c)
  * @}
  */
 
-PDSOFT_END
+PSOFFT_END
 
 #endif /* grid3D_cx.hpp */

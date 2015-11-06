@@ -1,29 +1,29 @@
 //
 //  forward_declarations.hpp
-//  PDSOFTlib
+//  PSOFFTlib
 //
 //   Created by Denis-Michael Lux on 05. November 2015.
 //
-//   This file is part of PDSOFTlib.
+//   This file is part of PSOFFTlib.
 //
-//   PDSOFTlib is free software: you can redistribute it and/or modify
+//   PSOFFTlib is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
 //   (at your option) any later version.
 //
-//   PDSOFTlib is distributed in the hope that it will be useful,
+//   PSOFFTlib is distributed in the hope that it will be useful,
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //   GNU General Public License for more details.
 //
 //   You should have received a copy of the GNU General Public License
-//   along with PDSOFTlib.  If not, see <http://www.gnu.org/licenses/>.
+//   along with PSOFFTlib.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef PDSOFTlib_forward_declarations_hpp
-#define PDSOFTlib_forward_declarations_hpp
+#ifndef PSOFFTlib_forward_declarations_hpp
+#define PSOFFTlib_forward_declarations_hpp
 
-PDSOFT_BEGIN
+PSOFFT_BEGIN
 
 // check if type is num type
 template< typename T > struct is_num_type                               { static const bool value = false;  };
@@ -63,6 +63,8 @@ template< typename T >                      class  vector< complex< T >, if_pod_
 template< typename, typename = void >       struct grid3D;
 template< typename T >                      struct grid3D< complex< T >, if_pod_type< T > >;
 
+// smart_array
+template< typename T >                      class  smart_array;
                                             class  stopwatch;
 
                                             struct DSOFTFourierCoefficients;
@@ -99,8 +101,8 @@ public:
     /*!
      * @brief           Removes the constantness of given element
      */
-    template< typename T > pdsoft_inline static T&  rw (const T& x)        { return const_cast< T&  >(x); }
-    template< typename T > pdsoft_inline static T*& rwp(const T* const& x) { return const_cast< T*& >(x); }
+    template< typename T > psofft_inline static T&  rw (const T& x)        { return const_cast< T&  >(x); }
+    template< typename T > psofft_inline static T*& rwp(const T* const& x) { return const_cast< T*& >(x); }
 };
 
 /*!
@@ -229,6 +231,6 @@ const T constants< T >::pi = static_cast< T >(3.14159265358979323846264338327950
 template< typename T >
 const T constants< T >::e = static_cast< T >(2.71828182845904523536028747135266249775724709369995957496696762772407663035354759457138217852516642742746639193200305992);
 
-PDSOFT_END
+PSOFFT_END
 
 #endif /* forward_declarations.hpp */

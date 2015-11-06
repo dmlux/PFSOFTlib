@@ -1,0 +1,65 @@
+//
+//  psofft
+//  PSOFFTlib
+//
+//   Created by Denis-Michael Lux on 05. November 2015.
+//
+//   This file is part of PSOFFTlib.
+//
+//   PSOFFTlib is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
+//
+//   PSOFFTlib is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+//
+//   You should have received a copy of the GNU General Public License
+//   along with PSOFFTlib.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+#ifndef PSOFFT_INCLUDES
+#define PSOFFT_INCLUDES
+
+/*- Standard libraries -*/
+#include <iostream>     // std::cout, std::err, ...
+#include <sstream>      // string streams
+#include <iomanip>      // formatting std:: streams
+
+#include <stdlib.h>     // malloc, free
+#include <cmath>        // abs, min, max, ...
+#include <sys/time.h>   // timeval
+
+#include <string.h>     // memcpy, memset
+
+#include <random>       // for random C++11 library
+
+/*- Compiler configuration       -*/
+#include "PSOFFTlib_headers/compiler_config.hpp"
+
+/*- Forward declarations         -*/
+#include "PSOFFTlib_headers/forward_declarations.hpp"
+
+/*- Wrapper interface            -*/
+#include "PSOFFTlib_headers/fftw_wrapper.hpp"
+
+/*- Classes                      -*/
+#include "PSOFFTlib_headers/smart_array.hpp"
+#include "PSOFFTlib_headers/complex.hpp"
+#include "PSOFFTlib_headers/grid3D_cx.hpp"
+#include "PSOFFTlib_headers/matrix.hpp"
+#include "PSOFFTlib_headers/matrix_cx.hpp"
+#include "PSOFFTlib_headers/stopwatch.hpp"
+#include "PSOFFTlib_headers/dsoft_fourier_coefficients.hpp"
+#include "PSOFFTlib_headers/random.hpp"
+#include "PSOFFTlib_headers/vector.hpp"
+#include "PSOFFTlib_headers/vector_cx.hpp"
+
+/*- Function implementations     -*/
+#include "PSOFFTlib_headers/fn_fourier_transforms.hpp"
+#include "PSOFFTlib_headers/fn_dwt.hpp"
+#include "PSOFFTlib_headers/fn_flip.hpp"
+
+#endif

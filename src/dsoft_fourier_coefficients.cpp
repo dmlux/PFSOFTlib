@@ -1,28 +1,28 @@
 //
 //  dsoft_fourier_coefficients.cpp
-//  PDSOFTlib
+//  PSOFFTlib
 //
 //   Created by Denis-Michael Lux on 05. November 2015.
 //
-//   This file is part of PDSOFTlib.
+//   This file is part of PSOFFTlib.
 //
-//   PDSOFTlib is free software: you can redistribute it and/or modify
+//   PSOFFTlib is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
 //   (at your option) any later version.
 //
-//   PDSOFTlib is distributed in the hope that it will be useful,
+//   PSOFFTlib is distributed in the hope that it will be useful,
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //   GNU General Public License for more details.
 //
 //   You should have received a copy of the GNU General Public License
-//   along with PDSOFTlib.  If not, see <http://www.gnu.org/licenses/>.
+//   along with PSOFFTlib.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <pdsoft>
+#include <psofft>
 
-PDSOFT_BEGIN
+PSOFFT_BEGIN
 
 /*!
  * @brief           Default constructor
@@ -81,7 +81,7 @@ complex< double >& DSOFTFourierCoefficients::operator()(const int& l, const int&
 {
     if (M > l || Mp > l || M < -l || Mp < -l)
     {
-        pdsoft_error("%s", "illegal parameter configuration for DSOFTFourierCoefficients access. M > l, M < -l, Mp < -l or Mp > l.");
+        psofft_error("%s", "illegal parameter configuration for DSOFTFourierCoefficients access. M > l, M < -l, Mp < -l or Mp > l.");
     }
     
     // if M or Mp are negative count from behind
@@ -107,7 +107,7 @@ const complex< double >& DSOFTFourierCoefficients::operator()(const int& l, cons
 {
     if (M > l || Mp > l || M < -l || Mp < -l)
     {
-        pdsoft_error("%s", "illegal parameter configuration for DSOFTFourierCoefficients access. M > l, M < -l, Mp < -l or Mp > l.");
+        psofft_error("%s", "illegal parameter configuration for DSOFTFourierCoefficients access. M > l, M < -l, Mp < -l or Mp > l.");
     }
     
     // if M or Mp are negative count from behind
@@ -142,4 +142,4 @@ std::ostream& operator<<(std::ostream& o, const DSOFTFourierCoefficients& fc)
     return o;
 }
 
-PDSOFT_END
+PSOFFT_END

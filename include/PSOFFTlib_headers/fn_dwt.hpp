@@ -1,29 +1,29 @@
 //
 //  fn_dwt.hpp
-//  PDSOFTlib
+//  PSOFFTlib
 //
 //   Created by Denis-Michael Lux on 05. November 2015.
 //
-//   This file is part of PDSOFTlib.
+//   This file is part of PSOFFTlib.
 //
-//   PDSOFTlib is free software: you can redistribute it and/or modify
+//   PSOFFTlib is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
 //   (at your option) any later version.
 //
-//   PDSOFTlib is distributed in the hope that it will be useful,
+//   PSOFFTlib is distributed in the hope that it will be useful,
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //   GNU General Public License for more details.
 //
 //   You should have received a copy of the GNU General Public License
-//   along with PDSOFTlib.  If not, see <http://www.gnu.org/licenses/>.
+//   along with PSOFFTlib.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef PDSOFTlib_fn_dwt_hpp
-#define PDSOFTlib_fn_dwt_hpp
+#ifndef PSOFFTlib_fn_dwt_hpp
+#define PSOFFTlib_fn_dwt_hpp
 
-PDSOFT_NAMESPACE(DWT)
+PSOFFT_NAMESPACE(DWT)
     
 /*- For more information/implementation details see fn_dwt.cpp file! -*/
 
@@ -65,7 +65,7 @@ void_number_type< T > quadrature_weights(vector< T >& vec)
 {
     if (vec.size & 1)
     {
-        pdsoft_warning("%s", "uneven vector length in DWT::quadrature_weights. ");
+        psofft_warning("%s", "uneven vector length in DWT::quadrature_weights. ");
         return;
     }
     
@@ -114,7 +114,7 @@ void_number_type< T > weighted_wigner_d_matrix(matrix< T >& wig, const int& band
     
     if ( wig.rows != bandwidth - minJ || wig.cols != 2 * bandwidth )
     {
-        pdsoft_warning("%s", "dimension mismatch between input matrix and function arguments in DWT::weighted_wigner_d_matrix.");
+        psofft_warning("%s", "dimension mismatch between input matrix and function arguments in DWT::weighted_wigner_d_matrix.");
         return;
     }
     
@@ -248,7 +248,7 @@ void_number_type< T > wigner_d_matrix(matrix< T >& wig, const int& bandwidth, co
     
     if ( wig.rows != bandwidth - minJ || wig.cols != 2 * bandwidth )
     {
-        pdsoft_warning("%s", "dimension mismatch between input matrix and function arguments in DWT::weighted_wigner_d_matrix.");
+        psofft_warning("%s", "dimension mismatch between input matrix and function arguments in DWT::weighted_wigner_d_matrix.");
         return;
     }
     
@@ -338,6 +338,6 @@ void_number_type< T > wigner_d_matrix(matrix< T >& wig, const int& bandwidth, co
     }
 }
 
-PDSOFT_NAMESPACE_END
+PSOFFT_NAMESPACE_END
 
 #endif /* fn_dwt.hpp */

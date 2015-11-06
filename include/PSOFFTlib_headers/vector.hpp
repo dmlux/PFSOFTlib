@@ -1,29 +1,29 @@
 //
 //  vector.hpp
-//  PDSOFTlib
+//  PSOFFTlib
 //
 //   Created by Denis-Michael Lux on 05. November 2015.
 //
-//   This file is part of PDSOFTlib.
+//   This file is part of PSOFFTlib.
 //
-//   PDSOFTlib is free software: you can redistribute it and/or modify
+//   PSOFFTlib is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
 //   (at your option) any later version.
 //
-//   PDSOFTlib is distributed in the hope that it will be useful,
+//   PSOFFTlib is distributed in the hope that it will be useful,
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //   GNU General Public License for more details.
 //
 //   You should have received a copy of the GNU General Public License
-//   along with PDSOFTlib.  If not, see <http://www.gnu.org/licenses/>.
+//   along with PSOFFTlib.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef PDSOFTlib_vector_hpp
-#define PDSOFTlib_vector_hpp
+#ifndef PSOFFTlib_vector_hpp
+#define PSOFFTlib_vector_hpp
 
-PDSOFT_BEGIN
+PSOFFT_BEGIN
 
 /*!
  * @brief       Collection of classes and functions for vectors for mathematical 
@@ -74,17 +74,15 @@ public:
     typedef const pod_type* iterator;   //!< Vector iterator
     
     // ivars
-    const size_t size;      //!< size of vector
-    const type type;        //!< type of vector
-    const pod_type* mem;    //!< vector data
+    const smart_array< pod_type > mem;  //!< vector data
+    const size_t size;                  //!< size of vector
+    const type type;                    //!< type of vector
     
     // methods
     inline                                      vector();
     inline                                      vector(const size_t& s, const enum type& t = vector< T >::ROW);
-    inline                                      vector(const size_t& s, const pod_type& initial, const enum type& t = vector< T >::ROW);
     inline                                      vector(const vector< pod_type >& vec);
     inline                                      vector(const vector< pod_type >& vec, const enum type& t);
-    inline                                      vector(vector< pod_type >&& vec);
     inline                                     ~vector();
     
     inline       matrix< pod_type >             operator*(const vector< pod_type >& v);
@@ -97,7 +95,6 @@ public:
     inline       vector< complex< pod_type > >  operator*(const matrix< complex< pod_type > >& mat);
     
     inline const vector< pod_type >&            operator=(const vector< pod_type >& v);
-    inline const vector< pod_type >&            operator=(vector< pod_type >&& v);
     
     inline const vector< pod_type >&            operator*=(const vector< pod_type >& v);
     inline const vector< pod_type >&            operator*=(const pod_type& s);
@@ -120,9 +117,8 @@ public:
 template< typename T >
 inline
 vector< T, if_pod_type< T > >::vector()
-    : size(0)
-    , type(vector< T >::ROW)
-    , mem(nullptr)
+    : type(vector< T >::ROW)
+    , size(0)
 {}
 
 /*!
@@ -141,39 +137,7 @@ vector< T, if_pod_type< T > >::vector(const size_t& s, const enum type& type)
     : size(s)
     , type(type)
 {
-    mem = new T[s];
-}
-
-/*!
- * @brief           Constructor for creating a vector of size \f$s\f$ and
- *                  type \f$t\f$ and initial value.
- * @details         Constructs a vector of type \f$t\f$ and size \f$s\f$
- *                  and fills the vector with an given element.
- *
- * @param[in]       s The size of the created vector.
- * @param[in]       initial The initial value for the vector elements
- * @param[in]       type Type of the created vector where \f$t\f$ can be
- *                  either type::ROW or type::COLUMN
- */
-template< typename T >
-inline
-vector< T, if_pod_type< T > >::vector(const size_t& s, const T& initial, const enum type& type)
-    : size(s)
-    , type(type)
-{
-    mem = new T[s];
-    
-    if (s > 0)
-    {
-        if (initial == 0 || initial == -1)
-        {
-            memset(mem, initial, size * sizeof(T));
-        }
-        else
-        {
-            std::fill(mem, mem + size, initial);
-        }
-    }
+    access::rw(mem) = smart_array< pod_type >(s);
 }
 
 /*!
@@ -190,12 +154,7 @@ vector< T, if_pod_type< T > >::vector(const vector< T >& vec)
     : size(vec.size)
     , type(vec.type)
 {
-    mem = new T[size];
-    
-    if (size > 0)
-    {
-        memcpy(mem, vec.mem, size * sizeof(T));
-    }
+    access::rw(mem) = vec.mem;
 }
 
 /*!
@@ -215,31 +174,7 @@ vector< T, if_pod_type< T > >::vector(const vector< T >& vec, const enum type& t
     : size(vec.size)
     , type(type)
 {
-    mem = new T[size];
-    
-    if (size > 0)
-    {
-        memcpy(mem, vec.mem, size * sizeof(T));
-    }
-}
-
-/*!
- * @brief           The move constructor for a new vector
- * @details         Constructs a new vector by taking the contents of a
- *                  given rvalue vector. The newly created vecotr is in
- *                  the same state than the given vector.
- *
- * @param[in, out]  vec The vector that is supposed to be copied.
- */
-template< typename T >
-inline
-vector< T, if_pod_type< T > >::vector(vector< T >&& vec)
-    : size(vec.size)
-    , type(vec.type)
-{
-    const T* tmp = mem;
-    mem           = vec.mem;
-    vec.mem       = tmp;
+    access::rw(mem) = vec.mem;
 }
 
 /*!
@@ -250,9 +185,7 @@ vector< T, if_pod_type< T > >::vector(vector< T >&& vec)
 template< typename T >
 inline
 vector< T, if_pod_type< T > >::~vector()
-{
-    delete [] mem;
-}
+{}
 
 /*!
  * @brief           Multiplication operator for a vector and a scalar.
@@ -317,7 +250,7 @@ inline
 vector< T > vector< T, if_pod_type< T > >::operator+()
 {
     vector< T > result;
-    memcpy(result.mem, mem, size * sizeof(T));
+    access::rw(result.mem) = mem;
     
     return result;
 }
@@ -366,39 +299,7 @@ const vector< T >& vector< T, if_pod_type< T > >::operator=(const vector< T >& v
     
     size = v.size;
     type = v.type;
-    
-    delete [] mem;
-    mem = new T[size];
-    
-    if (size > 0)
-    {
-        memcpy(mem, v.mem, size * sizeof(T));
-    }
-    
-    return *this;
-}
-
-/*!
- * @brief           The assigment move operator.
- * @details         Assigns the contents of a given vector \f$v\f$
- *                  which is a rvalue vector, by moving its contents
- *                  to the current vector object.
- */
-template< typename T >
-inline
-const vector< T >& vector< T, if_pod_type< T > >::operator=(vector< T >&& v)
-{
-    if ( this == &v )
-    {
-        return *this;
-    }
-    
-    size    = v.size;
-    type    = v.type;
-    
-    T* tmp  = mem;
-    mem     = v.mem;
-    v.mem   = tmp;
+    mem  = v.mem;
     
     return *this;
 }
@@ -654,6 +555,6 @@ std::ostream& operator<<(std::ostream& o, const vector< S >& v)
  * @}
  */
 
-PDSOFT_END
+PSOFFT_END
 
 #endif /* vector.hpp */

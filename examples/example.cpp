@@ -6,9 +6,9 @@
 //
 //
 
-#include <pdsoft>
+#include <psofft>
 
-using namespace pdsoft;
+using namespace psofft;
 
 void for_back(unsigned int bandwidth, bool show_coefs)
 {
@@ -84,6 +84,32 @@ void for_back(unsigned int bandwidth, bool show_coefs)
     printf("Correct result:  %s\n", (equal ? "Yes" : "No"));
 }
 
+void test()
+{
+    smart_array< double > d(5), e;
+    
+    for (int i = 0; i < 5; ++i)
+    {
+        d[i] = i + 1;
+    }
+    
+    bool equal = true;
+    
+    for (int i = 0; i < 5; ++i)
+    {
+        if (d[i] != i+1)
+        {
+            equal = false;
+            break;
+        }
+    }
+    
+    if (!equal)
+    {
+        printf("not equal!\n");
+    }
+}
+
 int main(int argc, const char ** argv)
 {
     if (argc < 2)
@@ -94,6 +120,8 @@ int main(int argc, const char ** argv)
     
     int B = atoi(*(argv + 1));
     for_back(B, false);
+    
+//    test();
     
     return 0;
 }

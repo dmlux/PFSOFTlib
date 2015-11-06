@@ -1,29 +1,29 @@
 //
 //  vector.hpp
-//  PDSOFTlib
+//  PSOFFTlib
 //
 //   Created by Denis-Michael Lux on 05. November 2015.
 //
-//   This file is part of PDSOFTlib.
+//   This file is part of PSOFFTlib.
 //
-//   PDSOFTlib is free software: you can redistribute it and/or modify
+//   PSOFFTlib is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
 //   (at your option) any later version.
 //
-//   PDSOFTlib is distributed in the hope that it will be useful,
+//   PSOFFTlib is distributed in the hope that it will be useful,
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //   GNU General Public License for more details.
 //
 //   You should have received a copy of the GNU General Public License
-//   along with PDSOFTlib.  If not, see <http://www.gnu.org/licenses/>.
+//   along with PSOFFTlib.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef PDSOFTlib_vector_cx_hpp
-#define PDSOFTlib_vector_cx_hpp
+#ifndef PSOFFTlib_vector_cx_hpp
+#define PSOFFTlib_vector_cx_hpp
 
-PDSOFT_BEGIN
+PSOFFT_BEGIN
 
 /*!
  * @ingroup    vector
@@ -69,22 +69,20 @@ public:
     };
     
     // iterators
-    typedef const pod_type* iterator;   //!< Vector iterator
+    typedef typename smart_array< complex< pod_type > >::iterator iterator; //!< Vector iterator
     
     // ivars
-    const size_t   size;        //!< size of vector
-    const type type;            //!< type of vector
-    const complex< T >* mem;    //!< vector data
+    const smart_array< complex< pod_type > > mem;   //!< vector data
+    const size_t size;                              //!< size of vector
+    const type type;                                //!< type of vector
     
     inline                                vector();
     inline                                vector(const size_t& s, const enum type& type = vector< complex< T > >::ROW);
-    inline                                vector(const size_t& s, const T& initial, const enum type& type = vector< complex< T > >::ROW);
-    inline                                vector(const size_t& s, const complex< T >& initial, const enum type& type = vector< complex< T > >::ROW);
     inline                                vector(const vector< T >& vec);
     inline                                vector(const vector< complex< T > >& vec);
     inline                                vector(const vector< T >& vec, const enum type& type);
     inline                                vector(const vector< complex< T > >& vec, const enum type& type);
-    inline                                vector(vector< complex< T > >&& vec);
+    inline                                vector(const size_t& s, const pod_type& initial, const enum type& type = vector< complex< pod_type > >::ROW);
     inline                               ~vector();
     
     inline       vector< complex< T > >   operator*(const T& s);
@@ -98,7 +96,6 @@ public:
     
     inline const vector< complex< T > >&  operator=(const vector< T >& v);
     inline const vector< complex< T > >&  operator=(const vector< complex< T > >& v);
-    inline const vector< complex< T > >&  operator=(vector< complex< T > >&& v);
     
     inline const vector< complex< T > >&  operator*=(const T& s);
     
@@ -121,8 +118,7 @@ template< typename T >
 inline
 vector< complex< T >, if_pod_type< T > >::vector()
     : size(0)
-    , type(vector< complex< T > >::ROW)
-    , mem(nullptr)
+    , type(vector< complex< pod_type > >::ROW)
 {}
 
 template< typename T >
@@ -131,37 +127,7 @@ vector< complex< T >, if_pod_type< T > >::vector(const size_t& s, const enum typ
     : size(s)
     , type(type)
 {
-    mem = new complex< T >[s];
-}
-
-template< typename T >
-inline
-vector< complex< T >, if_pod_type< T > >::vector(const size_t& s, const T& initial, const enum type& type)
-    : size(s)
-    , type(type)
-{
-    mem = new complex< T >[s];
-    
-    if (size > 0)
-    {
-        complex< T >* fill_mem = const_cast< complex< T >* >(mem);
-        std::fill(fill_mem, fill_mem + size, complex< T >(initial, 0));
-    }
-}
-
-template< typename T >
-inline
-vector< complex< T >, if_pod_type< T > >::vector(const size_t& s, const complex< T >& initial, const enum type& type)
-    : size(s)
-    , type(type)
-{
-    mem = new complex< T >[s];
-    
-    if (size > 0)
-    {
-        complex< T >* fill_mem = const_cast< complex< T >* >(mem);
-        std::fill(fill_mem, fill_mem + size, initial);
-    }
+    access::rw(mem) = smart_array< complex< pod_type > >(s);
 }
 
 template< typename T >
@@ -170,12 +136,12 @@ vector< complex< T >, if_pod_type< T > >::vector(const vector< T >& vec)
     : size(vec.size)
     , type(vec.type)
 {
-    mem = new complex< T >[vec.size];
+    access::rw(mem) = smart_array< complex< pod_type > >(vec.size);
     
     size_t i;
     for (i = 0; i < vec.size; ++i)
     {
-        mem[i] = complex< T >(vec[i], 0);
+        access::rw(mem[i]) = complex< T >(vec[i], 0);
     }
 }
 
@@ -185,8 +151,7 @@ vector< complex< T >, if_pod_type< T > >::vector(const vector< complex< T > >& v
     : size(vec.size)
     , type(vec.type)
 {
-    mem = new complex< T >[vec.size];
-    memcpy(access::rwp(mem), access::rwp(vec.mem), vec.size * sizeof(complex< T >));
+    access::rw(mem) = vec.mem;
 }
 
 template< typename T >
@@ -195,57 +160,56 @@ vector< complex< T >, if_pod_type< T > >::vector(const vector< T >& vec, const e
     : size(vec.size)
     , type(type)
 {
-    mem = new complex< T >[vec.size];
+    access::rw(mem) = smart_array< complex< pod_type > >(vec.size);
     
     size_t i;
     for (i = 0; i < vec.size; ++i)
     {
-        mem[i] = complex< T >(vec[i], 0);
+        access::rw(mem[i]) = complex< T >(vec[i], 0);
     }
 }
 
 template< typename T >
 inline
-vector< complex< T >, if_pod_type< T > >::vector(const vector< complex< T > >& vec, const enum type& t)
+vector< complex< T >, if_pod_type< T > >::vector(const vector< complex< T > >& vec, const enum type& type)
     : size(vec.size)
     , type(type)
 {
-    mem = new complex< T >[size];
-    
-    if (size > 0)
-    {
-        memcpy(access::rw(mem), access::rw(vec.mem), size * sizeof(complex< T >));
-    }
+    access::rw(mem) = vec.mem;
 }
 
 template< typename T >
 inline
-vector< complex< T >, if_pod_type< T > >::vector(vector< complex< T > >&& vec)
-    : size(vec.size)
-    , type(vec.type)
+vector< complex< T >, if_pod_type< T > >::vector(const size_t& s, const T& initial, const enum type& type)
+    : size(s)
+    , type(type)
 {
-    const complex< T >* tmp = mem;
-    mem                      = vec.mem;
-    vec.mem                  = tmp;
+    access::rw(mem) = smart_array< complex< pod_type > >(size);
+    
+    if (size > 0)
+    {
+        for (typename smart_array< complex< pod_type > >::iterator it = access::rw(mem).begin(); it != access::rw(mem).end(); ++it)
+        {
+            access::rw(*it) = 0;
+        }
+    }
 }
 
 template< typename T >
 inline
 vector< complex< T >, if_pod_type< T > >::~vector()
-{
-    delete [] mem;
-}
+{}
 
 template< typename T >
 inline
 vector< complex< T > > vector< complex< T >, if_pod_type< T > >::operator*(const T& s)
 {
-    vector< complex< T >>  result(size, type);
+    vector< complex< pod_type > > result(size, type);
     
     size_t i;
     for (i = 0; i < size; ++i)
     {
-        result[i] = const_cast< complex< double >& >(mem[i]) * complex< T >(s, 0);
+        result[i] = access::rw(mem[i]) * complex< pod_type >(s, 0);
     }
     
     return result;
@@ -255,7 +219,7 @@ template< typename T >
 inline
 vector< complex< T > > vector< complex< T >, if_pod_type< T > >::operator*(const complex< T >& s)
 {
-    vector< complex< T > > result(size, type);
+    vector< complex< pod_type > > result(size, type);
     
     size_t i;
     for (i = 0; i < size; ++i)
@@ -270,8 +234,8 @@ template< typename T >
 inline
 vector< complex< T > > vector< complex< T >, if_pod_type< T > >::operator+()
 {
-    vector< complex< T > > result(size, type);
-    memcpy(access::rw(mem), access::rw(result.mem), size * sizeof(complex< T >));
+    vector< complex< pod_type > > result(size, type);
+    access::rw(result.mem) = mem;
     
     return result;
 }
@@ -298,8 +262,7 @@ const vector< complex< T > >& vector< complex< T >, if_pod_type< T > >::operator
     size = v.size;
     type = v.type;
     
-    delete [] mem;
-    mem = new complex< T >[size];
+    mem = smart_array< complex< pod_type > >(size);
     
     if (size > 0)
     {
@@ -322,35 +285,9 @@ const vector< complex< T > >& vector< complex< T >, if_pod_type< T > >::operator
         return *this;
     }
     
-    size = v.size;
-    type = v.type;
-    
-    delete [] mem;
-    mem = new complex< T >[size];
-    
-    if (size > 0)
-    {
-        memcpy(access::rw(mem), access::rw(v.mem), size * sizeof(complex< T >));
-    }
-    
-    return *this;
-}
-
-template< typename T >
-inline
-const vector< complex< T > >& vector< complex< T >, if_pod_type< T > >::operator=(vector< complex< T > >&& v)
-{
-    if ( this == &v )
-    {
-        return *this;
-    }
-    
     access::rw(size) = v.size;
     access::rw(type) = v.type;
-    
-    const complex< T >* tmp = mem;
-    mem                      = v.mem;
-    v.mem                    = tmp;
+    access::rw(mem)  = v.mem;
     
     return *this;
 }
@@ -360,9 +297,9 @@ inline
 const vector< complex< T > >& vector< complex< T >, if_pod_type< T > >::operator*=(const T& s)
 {
     
-    for (const complex< T >* e = mem; e != mem + size; ++e)
+    for (typename smart_array< complex< pod_type > >::iterator it = access::rw(mem).begin(); it != access::rw(mem).end(); ++it)
     {
-        access::rw(*e) *= complex< T >(s, 0);
+        *it *= complex< pod_type >(s, 0);
     }
     
     return *this;
@@ -374,7 +311,7 @@ vector< complex< T > > vector< complex< T >, if_pod_type< T > >::operator-(const
 {
     if ( size != v.size || type != v.type)
     {
-        pdsoft_error("%s", "size mismatch in complex vector-vector subtraction.");
+        psofft_error("%s", "size mismatch in complex vector-vector subtraction.");
     }
     
     vector< complex< T > > result(size, type);
@@ -414,6 +351,20 @@ inline
 void vector< complex< T >, if_pod_type< T > >::transpose()
 {
     type = (type == vector< complex< T > >::ROW) ? vector< complex< T > >::COLUMN : vector< complex< T > >::ROW;
+}
+
+template< typename T >
+inline
+typename vector< complex< T >, if_pod_type< T > >::iterator vector< complex< T >, if_pod_type< T > >::begin()
+{
+    return access::rw(mem).begin();
+}
+
+template< typename T >
+inline
+typename vector< complex< T >, if_pod_type< T > >::iterator vector< complex< T >, if_pod_type< T > >::end()
+{
+    return access::rw(mem).end();
 }
 
 
@@ -525,6 +476,6 @@ std::ostream& operator<<(std::ostream& o, const vector< complex< S > >& v)
  * @}
  */
 
-PDSOFT_END
+PSOFFT_END
 
 #endif /* cx_vector_dec.hpp */
