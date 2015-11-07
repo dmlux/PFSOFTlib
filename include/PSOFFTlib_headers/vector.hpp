@@ -298,9 +298,9 @@ const vector< T >& vector< T, if_pod_type< T > >::operator=(const vector< pod_ty
         return *this;
     }
     
-    size = v.size;
-    type = v.type;
-    mem  = v.mem;
+    access::rw(size) = v.size;
+    access::rw(type) = v.type;
+    access::rw(mem)  = v.mem;
     
     return *this;
 }
@@ -321,7 +321,7 @@ const vector< T >& vector< T, if_pod_type< T > >::operator*=(const pod_type& s)
     size_t i;
     for (i = 0; i < size; ++i)
     {
-        mem[i] *= s;
+        access::rw(mem[i]) *= s;
     }
     
     return *this;

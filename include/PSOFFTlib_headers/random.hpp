@@ -29,7 +29,8 @@ PSOFFT_BEGIN
  * @brief       A context for random number creation
  */
 template< typename pod_type, typename derived >
-struct randctx
+struct
+randctx
 {
     inline const derived& get_ref() const;
 };

@@ -26,7 +26,8 @@
 PSOFFT_BEGIN
 
 template< typename T >
-class smart_array
+class
+smart_array
 {
 public:
     
@@ -48,8 +49,8 @@ public:
     inline                                ~smart_array();
     
     inline       pod_type&                 operator*();
+    
     inline       pod_type*&                operator+(const size_t& idx);
-    inline       pod_type*&                operator-(const size_t& idx);
     
     inline       pod_type&                 operator[](const size_t& idx);
     inline const pod_type&                 operator[](const size_t& idx) const;
@@ -73,6 +74,8 @@ smart_array< T >::smart_array()
 
 /*!
  * @brief           Constructor for a smart array of given size
+ *
+ * @param[in]       s Size of the array
  */
 template< typename T >
 inline
@@ -85,6 +88,8 @@ smart_array< T >::smart_array(const size_t& s)
 /*
  * @brief           Constructor for a smart array with same contents
  *                  and properties as another given array.
+ *
+ * @param[in]       array The array that should be copied.
  */
 template< typename T >
 inline
@@ -97,7 +102,10 @@ smart_array< T >::smart_array(const smart_array< pod_type >& array)
 }
 
 /*!
- * 
+ * @brief           Move constructor to create an smart array from
+ *                  another one
+ *
+ * @param[in/out]   array Array that should be copied
  */
 template< typename T >
 inline
@@ -108,6 +116,9 @@ smart_array< T >::smart_array(smart_array< pod_type >&& array)
     array.memory  = tmp;
 }
 
+/*!
+ * @brief           Destructor for the smart array
+ */
 template< typename T >
 inline
 smart_array< T >::~smart_array()
@@ -115,6 +126,11 @@ smart_array< T >::~smart_array()
     free( memory );
 }
 
+/*!
+ * @brief           Dereference operator for the smart array
+ *
+ * @return          The reference to the internal memory
+ */
 template< typename T >
 inline
 T& smart_array< T >::operator*()
@@ -122,18 +138,18 @@ T& smart_array< T >::operator*()
     return *memory;
 }
 
+/*!
+ * @brief           Addition operator to add the addresses of
+ *                  the internal memory.
+ *
+ * @param[in]       idx The distance to the memory address.
+ * @return          The new memory location
+ */
 template< typename T >
 inline
 T*& smart_array< T >::operator+(const size_t& idx)
 {
     return memory + idx;
-}
-
-template< typename T >
-inline
-T*& smart_array< T >::operator-(const size_t& idx)
-{
-    return memory - idx;
 }
 
 template< typename T >

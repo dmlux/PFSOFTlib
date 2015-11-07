@@ -288,10 +288,7 @@ const matrix< complex< T > >& matrix< complex< T >, if_pod_type< T > >::operator
     smart_array< complex< pod_type > > new_mem(rows);
     
     // set each value to 0
-    for (typename smart_array< complex< pod_type > >::iterator e = new_mem.begin(); e != new_mem.end(); ++e)
-    {
-        *e = 0;
-    }
+    memset(new_mem.begin(), 0, rows * cols * sizeof(pod_type));
     
     // do multiplication
     size_t i, j;
