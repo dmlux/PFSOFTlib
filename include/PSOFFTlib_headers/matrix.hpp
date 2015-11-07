@@ -449,6 +449,7 @@ void matrix< T, if_pod_type< T > >::transpose()
     size_t tmp_c = rows;
     
     size_t i, j;
+    #pragma omp parallel for private(i, j) collapse(2)
     for (i = 0; i < rows; ++i)
     {
         for (j = 0; j < cols; ++j)
