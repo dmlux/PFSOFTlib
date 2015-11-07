@@ -52,7 +52,8 @@ vector< complex< T >, if_pod_type< T > >
 {
 public:
     // type declarations
-    typedef T pod_type;                 //!< The POD type of matrix elements
+    typedef T                                                     pod_type; //!< The POD type of matrix elements
+    typedef typename smart_array< complex< pod_type > >::iterator iterator; //!< Vector iterator
     
     /*!
      * @brief       Specifing the type a vector can have
@@ -68,50 +69,47 @@ public:
         COLUMN      //!< Represents a row vector of dimension \f$1\times M\f$ where \f$M\in\mathbb{N}^+\f$
     };
     
-    // iterators
-    typedef typename smart_array< complex< pod_type > >::iterator iterator; //!< Vector iterator
-    
     // ivars
     const smart_array< complex< pod_type > > mem;   //!< vector data
     const size_t size;                              //!< size of vector
     const type type;                                //!< type of vector
     
-    inline                                vector();
-    inline                                vector(const size_t& s, const enum type& type = vector< complex< T > >::ROW);
-    inline                                vector(const vector< T >& vec);
-    inline                                vector(const vector< complex< T > >& vec);
-    inline                                vector(const vector< T >& vec, const enum type& type);
-    inline                                vector(const vector< complex< T > >& vec, const enum type& type);
-    inline                                vector(const size_t& s, const pod_type& initial, const enum type& type = vector< complex< pod_type > >::ROW);
-    inline                               ~vector();
+    inline                                      vector();
+    inline                                      vector(const size_t& s, const enum type& type = vector< complex< pod_type > >::ROW);
+    inline                                      vector(const vector< pod_type >& vec);
+    inline                                      vector(const vector< complex< pod_type > >& vec);
+    inline                                      vector(const vector< pod_type >& vec, const enum type& type);
+    inline                                      vector(const vector< complex< pod_type > >& vec, const enum type& type);
+    inline                                      vector(const size_t& s, const pod_type& initial, const enum type& type = vector< complex< pod_type > >::ROW);
+    inline                                     ~vector();
     
-    inline       vector< complex< T > >   operator*(const T& s);
-    inline       vector< complex< T > >   operator*(const complex< T >& s);
+    inline       vector< complex< pod_type > >  operator*(const pod_type& s);
+    inline       vector< complex< pod_type > >  operator*(const complex< pod_type >& s);
     
-    inline       vector< complex< T > >   operator+();
-    inline       vector< complex< T > >   operator-();
+    inline       vector< complex< pod_type > >  operator+();
+    inline       vector< complex< pod_type > >  operator-();
     
-    inline       vector< complex< T > >   operator*(const matrix< T >& mat);
-    inline       vector< complex< T > >   operator*(const matrix< complex< T > >& mat);
+    inline       vector< complex< pod_type > >  operator*(const matrix< pod_type >& mat);
+    inline       vector< complex< pod_type > >  operator*(const matrix< complex< pod_type > >& mat);
     
-    inline const vector< complex< T > >&  operator=(const vector< T >& v);
-    inline const vector< complex< T > >&  operator=(const vector< complex< T > >& v);
+    inline const vector< complex< pod_type > >& operator=(const vector< pod_type >& v);
+    inline const vector< complex< pod_type > >& operator=(const vector< complex< pod_type > >& v);
     
-    inline const vector< complex< T > >&  operator*=(const T& s);
+    inline const vector< complex< pod_type > >& operator*=(const pod_type& s);
     
-    inline       vector< complex< T > >   operator-(const vector< complex< T > >& v);
+    inline       vector< complex< pod_type > >  operator-(const vector< complex< pod_type > >& v);
     
-    inline       complex< T >&            operator[](const size_t& idx);
-    inline const complex< T >&            operator[](const size_t& idx) const;
+    inline       complex< pod_type >&           operator[](const size_t& idx);
+    inline const complex< pod_type >&           operator[](const size_t& idx) const;
     
-    inline       complex< T >&            operator()(const size_t& idx);
-    inline const complex< T >&            operator()(const size_t& idx) const;
+    inline       complex< pod_type >&           operator()(const size_t& idx);
+    inline const complex< pod_type >&           operator()(const size_t& idx) const;
     
-    inline       void                     transpose();
+    inline       void                           transpose();
     
     // iterator methods
-    inline       iterator                 begin();
-    inline       iterator                 end();
+    inline       iterator                       begin();
+    inline       iterator                       end();
 };
 
 template< typename T >
@@ -132,7 +130,7 @@ vector< complex< T >, if_pod_type< T > >::vector(const size_t& s, const enum typ
 
 template< typename T >
 inline
-vector< complex< T >, if_pod_type< T > >::vector(const vector< T >& vec)
+vector< complex< T >, if_pod_type< T > >::vector(const vector< pod_type >& vec)
     : size(vec.size)
     , type(vec.type)
 {
@@ -147,7 +145,7 @@ vector< complex< T >, if_pod_type< T > >::vector(const vector< T >& vec)
 
 template< typename T >
 inline
-vector< complex< T >, if_pod_type< T > >::vector(const vector< complex< T > >& vec)
+vector< complex< T >, if_pod_type< T > >::vector(const vector< complex< pod_type > >& vec)
     : size(vec.size)
     , type(vec.type)
 {
@@ -156,7 +154,7 @@ vector< complex< T >, if_pod_type< T > >::vector(const vector< complex< T > >& v
 
 template< typename T >
 inline
-vector< complex< T >, if_pod_type< T > >::vector(const vector< T >& vec, const enum type& type)
+vector< complex< T >, if_pod_type< T > >::vector(const vector< pod_type >& vec, const enum type& type)
     : size(vec.size)
     , type(type)
 {
@@ -165,13 +163,13 @@ vector< complex< T >, if_pod_type< T > >::vector(const vector< T >& vec, const e
     size_t i;
     for (i = 0; i < vec.size; ++i)
     {
-        access::rw(mem[i]) = complex< T >(vec[i], 0);
+        access::rw(mem[i]) = complex< pod_type >(vec[i], 0);
     }
 }
 
 template< typename T >
 inline
-vector< complex< T >, if_pod_type< T > >::vector(const vector< complex< T > >& vec, const enum type& type)
+vector< complex< T >, if_pod_type< T > >::vector(const vector< complex< pod_type > >& vec, const enum type& type)
     : size(vec.size)
     , type(type)
 {
@@ -180,7 +178,7 @@ vector< complex< T >, if_pod_type< T > >::vector(const vector< complex< T > >& v
 
 template< typename T >
 inline
-vector< complex< T >, if_pod_type< T > >::vector(const size_t& s, const T& initial, const enum type& type)
+vector< complex< T >, if_pod_type< T > >::vector(const size_t& s, const pod_type& initial, const enum type& type)
     : size(s)
     , type(type)
 {
@@ -190,7 +188,7 @@ vector< complex< T >, if_pod_type< T > >::vector(const size_t& s, const T& initi
     {
         for (typename smart_array< complex< pod_type > >::iterator it = access::rw(mem).begin(); it != access::rw(mem).end(); ++it)
         {
-            access::rw(*it) = 0;
+            *it = 0;
         }
     }
 }
@@ -202,7 +200,7 @@ vector< complex< T >, if_pod_type< T > >::~vector()
 
 template< typename T >
 inline
-vector< complex< T > > vector< complex< T >, if_pod_type< T > >::operator*(const T& s)
+vector< complex< T > > vector< complex< T >, if_pod_type< T > >::operator*(const pod_type& s)
 {
     vector< complex< pod_type > > result(size, type);
     
@@ -217,7 +215,7 @@ vector< complex< T > > vector< complex< T >, if_pod_type< T > >::operator*(const
 
 template< typename T >
 inline
-vector< complex< T > > vector< complex< T >, if_pod_type< T > >::operator*(const complex< T >& s)
+vector< complex< T > > vector< complex< T >, if_pod_type< T > >::operator*(const complex< pod_type >& s)
 {
     vector< complex< pod_type > > result(size, type);
     
@@ -244,7 +242,7 @@ template< typename T >
 inline
 vector< complex< T > > vector< complex< T >, if_pod_type< T > >::operator-()
 {
-    vector< complex< T > > result(size, type);
+    vector< complex< pod_type > > result(size, type);
     
     size_t i;
     for (i = 0; i < size; ++i)
@@ -257,7 +255,7 @@ vector< complex< T > > vector< complex< T >, if_pod_type< T > >::operator-()
 
 template< typename T >
 inline
-const vector< complex< T > >& vector< complex< T >, if_pod_type< T > >::operator=(const vector< T >& v)
+const vector< complex< T > >& vector< complex< T >, if_pod_type< T > >::operator=(const vector< pod_type >& v)
 {
     size = v.size;
     type = v.type;
@@ -269,7 +267,7 @@ const vector< complex< T > >& vector< complex< T >, if_pod_type< T > >::operator
         size_t i;
         for (i = 0; i < size; ++i)
         {
-            mem[i] = complex< T >(v[i], 0);
+            access::rw(mem[i]) = complex< T >(v[i], 0);
         }
     }
     
@@ -278,7 +276,7 @@ const vector< complex< T > >& vector< complex< T >, if_pod_type< T > >::operator
 
 template< typename T >
 inline
-const vector< complex< T > >& vector< complex< T >, if_pod_type< T > >::operator=(const vector< complex< T > >& v)
+const vector< complex< T > >& vector< complex< T >, if_pod_type< T > >::operator=(const vector< complex< pod_type > >& v)
 {
     if ( this == &v )
     {
@@ -307,14 +305,10 @@ const vector< complex< T > >& vector< complex< T >, if_pod_type< T > >::operator
 
 template< typename T >
 inline
-vector< complex< T > > vector< complex< T >, if_pod_type< T > >::operator-(const vector< complex< T > >& v)
+vector< complex< T > > vector< complex< T >, if_pod_type< T > >::operator-(const vector< complex< pod_type > >& v)
 {
-    if ( size != v.size || type != v.type)
-    {
-        psofft_error("%s", "size mismatch in complex vector-vector subtraction.");
-    }
-    
-    vector< complex< T > > result(size, type);
+    psofft_error(size != v.size || type != v.type, "%s", "size mismatch in complex vector-vector subtraction.");
+    vector< complex< pod_type > > result(size, type);
     
     size_t i;
     for (i = 0; i < v.size; ++i)
@@ -343,14 +337,14 @@ template< typename T >
 inline
 complex< T >& vector< complex< T >, if_pod_type< T > >::operator()(const size_t& idx)
 {
-    return mem[idx];
+    return access::rw(mem[idx]);
 }
 
 template< typename T >
 inline
 void vector< complex< T >, if_pod_type< T > >::transpose()
 {
-    type = (type == vector< complex< T > >::ROW) ? vector< complex< T > >::COLUMN : vector< complex< T > >::ROW;
+    access::rw(type) = (type == vector< complex< pod_type > >::ROW) ? vector< complex< pod_type > >::COLUMN : vector< complex< pod_type > >::ROW;
 }
 
 template< typename T >

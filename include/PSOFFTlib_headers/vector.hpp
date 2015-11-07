@@ -54,7 +54,8 @@ vector< T, if_pod_type< T > >
 {
 public:
     // type declarations
-    typedef T pod_type;                 //!< The POD type of matrix elements
+    typedef T                                          pod_type; //!< The POD type of matrix elements
+    typedef typename smart_array< pod_type >::iterator iterator; //!< Vector iterator
     
     /*!
      * @brief       Specifing the type a vector can have
@@ -70,9 +71,6 @@ public:
         COLUMN      //!< Represents a row vector of dimension \f$1\times M\f$ where \f$M\in\mathbb{N}^+\f$
     };
     
-    // iterators
-    typedef const pod_type* iterator;   //!< Vector iterator
-    
     // ivars
     const smart_array< pod_type > mem;  //!< vector data
     const size_t size;                  //!< size of vector
@@ -80,7 +78,7 @@ public:
     
     // methods
     inline                                      vector();
-    inline                                      vector(const size_t& s, const enum type& t = vector< T >::ROW);
+    inline                                      vector(const size_t& s, const enum type& t = vector< pod_type >::ROW);
     inline                                      vector(const vector< pod_type >& vec);
     inline                                      vector(const vector< pod_type >& vec, const enum type& t);
     inline                                     ~vector();
@@ -106,6 +104,9 @@ public:
     inline const pod_type&                      operator()(const size_t& idx) const;
     
     inline       void                           transpose();
+    
+    inline       iterator                       begin();
+    inline       iterator                       end();
 };
 
 /*!
@@ -117,7 +118,7 @@ public:
 template< typename T >
 inline
 vector< T, if_pod_type< T > >::vector()
-    : type(vector< T >::ROW)
+    : type(vector< pod_type >::ROW)
     , size(0)
 {}
 
@@ -150,7 +151,7 @@ vector< T, if_pod_type< T > >::vector(const size_t& s, const enum type& type)
  */
 template< typename T >
 inline
-vector< T, if_pod_type< T > >::vector(const vector< T >& vec)
+vector< T, if_pod_type< T > >::vector(const vector< pod_type >& vec)
     : size(vec.size)
     , type(vec.type)
 {
@@ -170,7 +171,7 @@ vector< T, if_pod_type< T > >::vector(const vector< T >& vec)
  */
 template< typename T >
 inline
-vector< T, if_pod_type< T > >::vector(const vector< T >& vec, const enum type& type)
+vector< T, if_pod_type< T > >::vector(const vector< pod_type >& vec, const enum type& type)
     : size(vec.size)
     , type(type)
 {
@@ -199,9 +200,9 @@ vector< T, if_pod_type< T > >::~vector()
  */
 template< typename T >
 inline
-vector< T > vector< T, if_pod_type< T > >::operator*(const T& s)
+vector< T > vector< T, if_pod_type< T > >::operator*(const pod_type& s)
 {
-    vector< T > result(size, type);
+    vector< pod_type > result(size, type);
     
     size_t i;
     for (i = 0; i < size; ++i)
@@ -224,14 +225,14 @@ vector< T > vector< T, if_pod_type< T > >::operator*(const T& s)
  */
 template< typename T >
 inline
-vector< complex< T > > vector< T, if_pod_type< T > >::operator*(const complex< T >& s)
+vector< complex< T > > vector< T, if_pod_type< T > >::operator*(const complex< pod_type >& s)
 {
-    vector< complex< T > > result(size, type);
+    vector< complex< pod_type > > result(size, type);
     
     size_t i;
     for (i = 0; i < size; ++i)
     {
-        result[i] = complex< T >(mem[i], 0) * s;
+        result[i] = complex< pod_type >(mem[i], 0) * s;
     }
     
     return result;
@@ -249,7 +250,7 @@ template< typename T >
 inline
 vector< T > vector< T, if_pod_type< T > >::operator+()
 {
-    vector< T > result;
+    vector< pod_type > result;
     access::rw(result.mem) = mem;
     
     return result;
@@ -265,7 +266,7 @@ template< typename T >
 inline
 vector< T > vector< T, if_pod_type< T > >::operator-()
 {
-    vector< T > result;
+    vector< pod_type > result;
     
     size_t i;
     for (i = 0; i < size; ++i)
@@ -290,7 +291,7 @@ vector< T > vector< T, if_pod_type< T > >::operator-()
  */
 template< typename T >
 inline
-const vector< T >& vector< T, if_pod_type< T > >::operator=(const vector< T >& v)
+const vector< T >& vector< T, if_pod_type< T > >::operator=(const vector< pod_type >& v)
 {
     if ( this == &v )
     {
@@ -315,7 +316,7 @@ const vector< T >& vector< T, if_pod_type< T > >::operator=(const vector< T >& v
  */
 template< typename T >
 inline
-const vector< T >& vector< T, if_pod_type< T > >::operator*=(const T& s)
+const vector< T >& vector< T, if_pod_type< T > >::operator*=(const pod_type& s)
 {
     size_t i;
     for (i = 0; i < size; ++i)
@@ -332,7 +333,7 @@ const vector< T >& vector< T, if_pod_type< T > >::operator*=(const T& s)
  *                  to access the elements of the vector by using square brackets on the
  *                  vector object like this.
  *                  @code
- *                      vector<double> v(5, vector< double >::type::ROW);
+ *                      vector<double> v(5, vector< double >::ROW);
  *                      v.fill(5);
  *
  *                      // use subscript to overwrite the third value
@@ -361,7 +362,7 @@ T& vector< T, if_pod_type< T > >::operator[](const size_t& idx)
  *                  vector object like this.
  *                  @code
  *                      double a = 3;
- *                      vector<double> v(5, vector<double>::type::ROW)
+ *                      vector<double> v(5, vector<double>::ROW)
  *                      v.fill(5);
  *
  *                      // use subscript to read from the vector
@@ -390,7 +391,7 @@ const T& vector< T, if_pod_type< T > >::operator[](const size_t& idx) const
  *                  to access the elements of the vector by using parenthesis on the
  *                  vector object like this.
  *                  @code
- *                      vector<double> v(5, vector<double>::type::ROW);
+ *                      vector<double> v(5, vector<double>::ROW);
  *                      v.fill(5);
  *
  *                      // use subscript to overwrite the third value
@@ -419,7 +420,7 @@ T& vector< T, if_pod_type< T > >::operator()(const size_t& idx)
  *                  vector object like this.
  *                  @code
  *                      double a = 3;
- *                      vector<double> v(5, vector<double>::type::ROW)
+ *                      vector<double> v(5, vector<double>::ROW)
  *                      v.fill(5);
  *
  *                      // use subscript to read from the vector
@@ -449,9 +450,22 @@ template< typename T >
 inline
 void vector< T, if_pod_type< T > >::transpose()
 {
-    type = (type == vector< T >::ROW) ? vector< T >::COLUMN : vector< T >::ROW;
+    type = (type == vector< pod_type >::ROW) ? vector< pod_type >::COLUMN : vector< pod_type >::ROW;
 }
 
+template< typename T >
+inline
+typename vector< T, if_pod_type< T > >::iterator vector< T, if_pod_type< T > >::begin()
+{
+    return access::rw(mem).begin();
+}
+
+template< typename T >
+inline
+typename vector< T, if_pod_type< T > >::iterator vector< T, if_pod_type< T > >::end()
+{
+    return access::rw(mem).end();
+}
 
 
 /*!

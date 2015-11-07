@@ -90,22 +90,33 @@
 
 /*- Debugging log -*/
 // Printing error message to the stderr console
-#define psofft_error(fmt, ...)\
+#define psofft_error(condition, fmt, ...)\
         do {\
-            if(PSOFFT_DEBUG && PSOFFT_SHOW_ERRORS)\
+            if(condition && PSOFFT_DEBUG && PSOFFT_SHOW_ERRORS) {\
                 fprintf(stderr, "** [PSOFFTLib error]   %s:%d:%s(): " fmt " **\n",\
                     __FILE__, __LINE__, __func__, __VA_ARGS__\
                 );\
-            exit(EXIT_FAILURE);\
+                exit(EXIT_FAILURE);\
+            }\
         } while(0)
 
 // printing warning message to the stderr console
-#define psofft_warning(fmt, ...)\
+#define psofft_warning(condition, fmt, ...)\
         do {\
-            if (PSOFFT_DEBUG && PSOFFT_SHOW_WARNINGS)\
+            if (condition && PSOFFT_DEBUG && PSOFFT_SHOW_WARNINGS)\
                 fprintf(stderr, "** [PSOFFTLib warning] %s:%d:%s(): " fmt " **\n",\
                     __FILE__, __LINE__, __func__, __VA_ARGS__\
                 );\
+        } while(0)
+        
+#define psofft_warning_return(condition, fmt, ...)\
+        do {\
+            if (condition && PSOFFT_DEBUG && PSOFFT_SHOW_WARNINGS) {\
+                fprintf(stderr, "** [PSOFFTLib warning] %s:%d:%s(): " fmt " **\n",\
+                    __FILE__, __LINE__, __func__, __VA_ARGS__\
+                );\
+                return;\
+            }\
         } while(0)
       
 /*- Attributes -*/

@@ -79,10 +79,7 @@ DSOFTFourierCoefficients::~DSOFTFourierCoefficients()
  */
 complex< double >& DSOFTFourierCoefficients::operator()(const int& l, const int& M, const int& Mp)
 {
-    if (M > l || Mp > l || M < -l || Mp < -l)
-    {
-        psofft_error("%s", "illegal parameter configuration for DSOFTFourierCoefficients access. M > l, M < -l, Mp < -l or Mp > l.");
-    }
+    psofft_error(M > l || Mp > l || M < -l || Mp < -l, "%s", "illegal parameter for DSOFTFourierCoefficients. Condition |M|,|Mp| <= l violated.");
     
     // if M or Mp are negative count from behind
     size_t idx_M  = (M  >= 0 ? M  : mem[l].rows + M );
@@ -105,10 +102,7 @@ complex< double >& DSOFTFourierCoefficients::operator()(const int& l, const int&
  */
 const complex< double >& DSOFTFourierCoefficients::operator()(const int& l, const int& M, const int& Mp) const
 {
-    if (M > l || Mp > l || M < -l || Mp < -l)
-    {
-        psofft_error("%s", "illegal parameter configuration for DSOFTFourierCoefficients access. M > l, M < -l, Mp < -l or Mp > l.");
-    }
+    psofft_error(M > l || Mp > l || M < -l || Mp < -l, "%s", "illegal parameter for DSOFTFourierCoefficients. Condition |M|,|Mp| <= l violated.");
     
     // if M or Mp are negative count from behind
     size_t idx_M  = (M  >= 0 ? M  : mem[l].rows + M );

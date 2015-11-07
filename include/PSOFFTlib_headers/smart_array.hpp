@@ -48,6 +48,8 @@ public:
     inline                                ~smart_array();
     
     inline       pod_type&                 operator*();
+    inline       pod_type*&                operator+(const size_t& idx);
+    inline       pod_type*&                operator-(const size_t& idx);
     
     inline       pod_type&                 operator[](const size_t& idx);
     inline const pod_type&                 operator[](const size_t& idx) const;
@@ -59,6 +61,9 @@ public:
     inline       iterator                  end();
 };
 
+/*!
+ * @brief           Constructor for a smart array of no size
+ */
 template< typename T >
 inline
 smart_array< T >::smart_array()
@@ -66,6 +71,9 @@ smart_array< T >::smart_array()
     , size(0)
 {}
 
+/*!
+ * @brief           Constructor for a smart array of given size
+ */
 template< typename T >
 inline
 smart_array< T >::smart_array(const size_t& s)
@@ -74,6 +82,10 @@ smart_array< T >::smart_array(const size_t& s)
     size   = s;
 }
 
+/*
+ * @brief           Constructor for a smart array with same contents
+ *                  and properties as another given array.
+ */
 template< typename T >
 inline
 smart_array< T >::smart_array(const smart_array< pod_type >& array)
@@ -84,6 +96,9 @@ smart_array< T >::smart_array(const smart_array< pod_type >& array)
     memcpy(memory, array.memory, size * sizeof(pod_type));
 }
 
+/*!
+ * 
+ */
 template< typename T >
 inline
 smart_array< T >::smart_array(smart_array< pod_type >&& array)
@@ -105,6 +120,20 @@ inline
 T& smart_array< T >::operator*()
 {
     return *memory;
+}
+
+template< typename T >
+inline
+T*& smart_array< T >::operator+(const size_t& idx)
+{
+    return memory + idx;
+}
+
+template< typename T >
+inline
+T*& smart_array< T >::operator-(const size_t& idx)
+{
+    return memory - idx;
 }
 
 template< typename T >

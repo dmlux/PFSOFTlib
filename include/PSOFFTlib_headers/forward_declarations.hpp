@@ -26,22 +26,22 @@
 PSOFFT_BEGIN
 
 // check if type is num type
-template< typename T > struct is_num_type                               { static const bool value = false;  };
-template<>             struct is_num_type< short >                      { static const bool value = true;   };
-template<>             struct is_num_type< int >                        { static const bool value = true;   };
-template<>             struct is_num_type< long >                       { static const bool value = true;   };
-template<>             struct is_num_type< long long >                  { static const bool value = true;   };
-template<>             struct is_num_type< unsigned short >             { static const bool value = true;   };
-template<>             struct is_num_type< unsigned int >               { static const bool value = true;   };
-template<>             struct is_num_type< unsigned long >              { static const bool value = true;   };
-template<>             struct is_num_type< unsigned long long >         { static const bool value = true;   };
-template<>             struct is_num_type< float >                      { static const bool value = true;   };
-template<>             struct is_num_type< double >                     { static const bool value = true;   };
-template<>             struct is_num_type< long double >                { static const bool value = true;   };
+template< typename T > struct is_num_type                       { static const bool value = false;  };
+template<>             struct is_num_type< short >              { static const bool value = true;   };
+template<>             struct is_num_type< int >                { static const bool value = true;   };
+template<>             struct is_num_type< long >               { static const bool value = true;   };
+template<>             struct is_num_type< long long >          { static const bool value = true;   };
+template<>             struct is_num_type< unsigned short >     { static const bool value = true;   };
+template<>             struct is_num_type< unsigned int >       { static const bool value = true;   };
+template<>             struct is_num_type< unsigned long >      { static const bool value = true;   };
+template<>             struct is_num_type< unsigned long long > { static const bool value = true;   };
+template<>             struct is_num_type< float >              { static const bool value = true;   };
+template<>             struct is_num_type< double >             { static const bool value = true;   };
+template<>             struct is_num_type< long double >        { static const bool value = true;   };
 
 // check if template is true
-template< bool T, typename U = void > struct if_true                    {                                   };
-template< typename U >                struct if_true< true, U >         { typedef U type;                   };
+template< bool T, typename U = void >       struct if_true            {                             };
+template< typename U >                      struct if_true< true, U > { typedef U type;             };
 
 // template alias
 template< typename pod > using if_pod_type = typename if_true< is_num_type< pod >::value >::type;
@@ -51,20 +51,20 @@ template< typename >                        class  complex;
 
 // matrix
 template< typename, typename = void >       class  matrix;
-template< typename T >                      class  matrix< T,            if_pod_type< T > >;
-template< typename T >                      class  matrix< complex< T >, if_pod_type< T > >;
+template< typename pod_type >               class  matrix< pod_type,            if_pod_type< pod_type > >;
+template< typename pod_type >               class  matrix< complex< pod_type >, if_pod_type< pod_type > >;
 
 // vector
 template< typename, typename = void >       class  vector;
-template< typename T >                      class  vector< T,            if_pod_type< T > >;
-template< typename T >                      class  vector< complex< T >, if_pod_type< T > >;
+template< typename pod_type >               class  vector< pod_type,            if_pod_type< pod_type > >;
+template< typename pod_type >               class  vector< complex< pod_type >, if_pod_type< pod_type > >;
 
 // 3D grid
 template< typename, typename = void >       struct grid3D;
-template< typename T >                      struct grid3D< complex< T >, if_pod_type< T > >;
+template< typename pod_type >               struct grid3D< complex< pod_type >, if_pod_type< pod_type > >;
 
 // smart_array
-template< typename T >                      class  smart_array;
+template< typename >                        class  smart_array;
                                             class  stopwatch;
 
                                             struct DSOFTFourierCoefficients;
@@ -101,8 +101,8 @@ public:
     /*!
      * @brief           Removes the constantness of given element
      */
-    template< typename T > psofft_inline static T&  rw (const T& x)        { return const_cast< T&  >(x); }
-    template< typename T > psofft_inline static T*& rwp(const T* const& x) { return const_cast< T*& >(x); }
+    template< typename pod_type > psofft_inline static pod_type&  rw (const pod_type& x)        { return const_cast< pod_type&  >(x); }
+    template< typename pod_type > psofft_inline static pod_type*& rwp(const pod_type* const& x) { return const_cast< pod_type*& >(x); }
 };
 
 /*!
@@ -114,43 +114,43 @@ public:
  */
 
 // check for same type
-template< typename T, typename U > struct same_type                         { static const bool value = false;  };
-template< typename T >             struct same_type< T, T >                 { static const bool value = true;   };
+template< typename T, typename U > struct same_type                     { static const bool value = false;  };
+template< typename T >             struct same_type< T, T >             { static const bool value = true;   };
 
 // check for different types
-template< typename T, typename U > struct different_type                    { static const bool value = true;   };
-template< typename T >             struct different_type< T, T >            { static const bool value = false;  };
+template< typename T, typename U > struct different_type                { static const bool value = true;   };
+template< typename T >             struct different_type< T, T >        { static const bool value = false;  };
 
 // check if type is complex number
-template< typename T > struct is_complex                                    { static const bool value = false;  };
-template<>             struct is_complex< complex< short > >                { static const bool value = true;   };
-template<>             struct is_complex< complex< int > >                  { static const bool value = true;   };
-template<>             struct is_complex< complex< long > >                 { static const bool value = true;   };
-template<>             struct is_complex< complex< long long > >            { static const bool value = true;   };
-template<>             struct is_complex< complex< unsigned short > >       { static const bool value = true;   };
-template<>             struct is_complex< complex< unsigned int > >         { static const bool value = true;   };
-template<>             struct is_complex< complex< unsigned long > >        { static const bool value = true;   };
-template<>             struct is_complex< complex< unsigned long long > >   { static const bool value = true;   };
-template<>             struct is_complex< complex< float > >                { static const bool value = true;   };
-template<>             struct is_complex< complex< double > >               { static const bool value = true;   };
-template<>             struct is_complex< complex< long double > >          { static const bool value = true;   };
+template< typename > struct is_complex                                  { static const bool value = false;  };
+template<>           struct is_complex< complex< short > >              { static const bool value = true;   };
+template<>           struct is_complex< complex< int > >                { static const bool value = true;   };
+template<>           struct is_complex< complex< long > >               { static const bool value = true;   };
+template<>           struct is_complex< complex< long long > >          { static const bool value = true;   };
+template<>           struct is_complex< complex< unsigned short > >     { static const bool value = true;   };
+template<>           struct is_complex< complex< unsigned int > >       { static const bool value = true;   };
+template<>           struct is_complex< complex< unsigned long > >      { static const bool value = true;   };
+template<>           struct is_complex< complex< unsigned long long > > { static const bool value = true;   };
+template<>           struct is_complex< complex< float > >              { static const bool value = true;   };
+template<>           struct is_complex< complex< double > >             { static const bool value = true;   };
+template<>           struct is_complex< complex< long double > >        { static const bool value = true;   };
 
 // check if type is real
-template< typename T > struct is_real_type                                  { static const bool value = false;  };
-template<>             struct is_real_type< float >                         { static const bool value = true;   };
-template<>             struct is_real_type< double >                        { static const bool value = true;   };
-template<>             struct is_real_type< long double >                   { static const bool value = true;   };
+template< typename > struct is_real_type                                { static const bool value = false;  };
+template<>           struct is_real_type< float >                       { static const bool value = true;   };
+template<>           struct is_real_type< double >                      { static const bool value = true;   };
+template<>           struct is_real_type< long double >                 { static const bool value = true;   };
 
 // check if type is integral
-template< typename T > struct is_integral_type                              { static const bool value = false;  };
-template<>             struct is_integral_type< short >                     { static const bool value = true;   };
-template<>             struct is_integral_type< int >                       { static const bool value = true;   };
-template<>             struct is_integral_type< long >                      { static const bool value = true;   };
-template<>             struct is_integral_type< long long >                 { static const bool value = true;   };
-template<>             struct is_integral_type< unsigned short >            { static const bool value = true;   };
-template<>             struct is_integral_type< unsigned int >              { static const bool value = true;   };
-template<>             struct is_integral_type< unsigned long >             { static const bool value = true;   };
-template<>             struct is_integral_type< unsigned long long >        { static const bool value = true;   };
+template< typename > struct is_integral_type                            { static const bool value = false;  };
+template<>           struct is_integral_type< short >                   { static const bool value = true;   };
+template<>           struct is_integral_type< int >                     { static const bool value = true;   };
+template<>           struct is_integral_type< long >                    { static const bool value = true;   };
+template<>           struct is_integral_type< long long >               { static const bool value = true;   };
+template<>           struct is_integral_type< unsigned short >          { static const bool value = true;   };
+template<>           struct is_integral_type< unsigned int >            { static const bool value = true;   };
+template<>           struct is_integral_type< unsigned long >           { static const bool value = true;   };
+template<>           struct is_integral_type< unsigned long long >      { static const bool value = true;   };
 
 /*!
  * @}
@@ -163,42 +163,42 @@ template<>             struct is_integral_type< unsigned long long >        { st
  */
 
 // Real values for return type void
-template< typename T > struct void_real_only                                    {                                               };
-template<>             struct void_real_only< float >                           { typedef void result;                          };
-template<>             struct void_real_only< double >                          { typedef void result;                          };
-template<>             struct void_real_only< long double >                     { typedef void result;                          };
+template< typename T > struct void_real_only                            {                                       };
+template<>             struct void_real_only< float >                   { typedef void result;                  };
+template<>             struct void_real_only< double >                  { typedef void result;                  };
+template<>             struct void_real_only< long double >             { typedef void result;                  };
 
 template< typename T > using void_real_type = typename void_real_only< T >::result;
 
 // Numbers only
-template< typename T > struct numbers_only                                      {                                               };
-template<>             struct numbers_only< short >                             { typedef short result;                         };
-template<>             struct numbers_only< int >                               { typedef int result;                           };
-template<>             struct numbers_only< long >                              { typedef long result;                          };
-template<>             struct numbers_only< long long >                         { typedef long long result;                     };
-template<>             struct numbers_only< unsigned short >                    { typedef unsigned short result;                };
-template<>             struct numbers_only< unsigned int >                      { typedef unsigned int result;                  };
-template<>             struct numbers_only< unsigned long >                     { typedef unsigned long result;                 };
-template<>             struct numbers_only< unsigned long long >                { typedef unsigned long long result;            };
-template<>             struct numbers_only< float >                             { typedef float result;                         };
-template<>             struct numbers_only< double >                            { typedef double result;                        };
-template<>             struct numbers_only< long double >                       { typedef long double result;                   };
+template< typename T > struct numbers_only                              {                                       };
+template<>             struct numbers_only< short >                     { typedef short result;                 };
+template<>             struct numbers_only< int >                       { typedef int result;                   };
+template<>             struct numbers_only< long >                      { typedef long result;                  };
+template<>             struct numbers_only< long long >                 { typedef long long result;             };
+template<>             struct numbers_only< unsigned short >            { typedef unsigned short result;        };
+template<>             struct numbers_only< unsigned int >              { typedef unsigned int result;          };
+template<>             struct numbers_only< unsigned long >             { typedef unsigned long result;         };
+template<>             struct numbers_only< unsigned long long >        { typedef unsigned long long result;    };
+template<>             struct numbers_only< float >                     { typedef float result;                 };
+template<>             struct numbers_only< double >                    { typedef double result;                };
+template<>             struct numbers_only< long double >               { typedef long double result;           };
 
 template< typename T > using number_type = typename numbers_only< T >::result;
 
 // Real numbers for return type void
-template< typename T > struct void_numbers_only                                 {                                               };
-template<>             struct void_numbers_only< short >                        { typedef void result;                          };
-template<>             struct void_numbers_only< int >                          { typedef void result;                          };
-template<>             struct void_numbers_only< long >                         { typedef void result;                          };
-template<>             struct void_numbers_only< long long >                    { typedef void result;                          };
-template<>             struct void_numbers_only< unsigned short >               { typedef void result;                          };
-template<>             struct void_numbers_only< unsigned int >                 { typedef void result;                          };
-template<>             struct void_numbers_only< unsigned long >                { typedef void result;                          };
-template<>             struct void_numbers_only< unsigned long long >           { typedef void result;                          };
-template<>             struct void_numbers_only< float >                        { typedef void result;                          };
-template<>             struct void_numbers_only< double >                       { typedef void result;                          };
-template<>             struct void_numbers_only< long double >                  { typedef void result;                          };
+template< typename T > struct void_numbers_only                         {                                       };
+template<>             struct void_numbers_only< short >                { typedef void result;                  };
+template<>             struct void_numbers_only< int >                  { typedef void result;                  };
+template<>             struct void_numbers_only< long >                 { typedef void result;                  };
+template<>             struct void_numbers_only< long long >            { typedef void result;                  };
+template<>             struct void_numbers_only< unsigned short >       { typedef void result;                  };
+template<>             struct void_numbers_only< unsigned int >         { typedef void result;                  };
+template<>             struct void_numbers_only< unsigned long >        { typedef void result;                  };
+template<>             struct void_numbers_only< unsigned long long >   { typedef void result;                  };
+template<>             struct void_numbers_only< float >                { typedef void result;                  };
+template<>             struct void_numbers_only< double >               { typedef void result;                  };
+template<>             struct void_numbers_only< long double >          { typedef void result;                  };
 
 template< typename T > using void_number_type = typename void_numbers_only< T >::result;
 
@@ -217,19 +217,18 @@ template< typename T > using uniform_real_dist_type = typename uniform_real_dist
 /*!
  * @brief       A collection of usable constants
  */
-template< typename T >
-class constants
+template< typename pod_type >
+struct constants
 {
-public:
-    static const T pi; //!< The ratio of a circle's circumference to its diameter
-    static const T e;  //!< e is the limit of (1 + 1/n)^n for n to infinity
+    static const pod_type pi; //!< The ratio of a circle's circumference to its diameter
+    static const pod_type e;  //!< e is the limit of (1 + 1/n)^n for n to infinity
 };
 
-template< typename T >
-const T constants< T >::pi = static_cast< T >(3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664);
+template< typename pod_type >
+const pod_type constants< pod_type >::pi = static_cast< pod_type >(3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664);
 
-template< typename T >
-const T constants< T >::e = static_cast< T >(2.71828182845904523536028747135266249775724709369995957496696762772407663035354759457138217852516642742746639193200305992);
+template< typename pod_type >
+const pod_type constants< pod_type >::e = static_cast< pod_type >(2.71828182845904523536028747135266249775724709369995957496696762772407663035354759457138217852516642742746639193200305992);
 
 PSOFFT_END
 

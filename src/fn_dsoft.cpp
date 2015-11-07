@@ -79,18 +79,10 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
      ** Check parameters                                            **
      *****************************************************************/
     // Check if the grid has same size in each dimension
-    if (sample.rows != sample.cols || sample.rows != sample.lays)
-    {
-        psofft_warning("%s", "all DSOFT sample grid dimensions should be equal.");
-        return;
-    }
+    psofft_warning_return(sample.rows != sample.cols || sample.rows != sample.lays, "%s", "all DSOFT sample grid dimensions should be equal.");
     
     // Check if grid has odd dimensions
-    if (sample.rows & 1)
-    {
-        psofft_warning("%s", "DSOFT sample grid dimensions are not even.");
-        return;
-    }
+    psofft_warning_return(sample.rows & 1, "%s", "DSOFT sample grid dimensions are not even.");
     
     // Extract bandwidth
     const int bandwidth = static_cast< int >(sample.cols / 2);
@@ -99,18 +91,11 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
     const int bw2 = 2 * bandwidth;
     
     // Check if Fourier coefficients container dimension matches sample dimension
-    if (bandwidth != fc.bandwidth)
-    {
-        psofft_warning("%s", "DSOFT Fourier coefficients container bandwidth does not match to sample grid bandwidth.");
-        return;
-    }
+    psofft_warning_return(bandwidth != fc.bandwidth, "%s", "DSOFT Fourier coefficients container bandwidth does not match to sample grid bandwidth.");
     
     // print warinings for serial implementation
     #ifndef _OPENMP
-    if (threads != 1)
-    {
-        psofft_warning("%s", "compiler does not support OpenMP. Changing the number of threads for the DSOFT has no effect.");
-    }
+    psofft_warning(threads != 1, "%s", "compiler does not support OpenMP. Changing the number of threads for the DSOFT has no effect.");
     #endif
     
     /*****************************************************************
@@ -135,11 +120,13 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
     
     // defining needed indices
     int MMp, M, Mp;
+    vector< complex< double > >::iterator e;
+    matrix< double >::lin_iterator m;
     
     // DWT for M = 0, M' = 0
-    for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(0, 0, e - s.begin());                          }
+    for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(0, 0, e - s.begin());                            }
     vector< complex< double > > sh = dw * s;
-    for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), 0, 0) = norm * *e;          }
+    for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), 0, 0) = norm * *e;            }
     
     /*****************************************************************
      ** Iterate over all combinations of M and M'                   **
@@ -147,7 +134,7 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
     #pragma omp parallel default(shared) if(bandwidth >= DSOFT_THRESHOLD) num_threads(threads)
     {
         
-        #pragma omp for private(M) firstprivate(dw, s, sh) schedule(dynamic) nowait
+        #pragma omp for private(M, e) firstprivate(dw, s, sh) schedule(dynamic) nowait
         for (M = 1; M < bandwidth; ++M)
         {
             access::rw(dw.rows) = bandwidth - M;
@@ -158,49 +145,49 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
              ** Make use of symmetries                                      **
              *****************************************************************/
             // case f_{M,0}
-            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(0, M, e - s.begin());                  }
+            for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(0, M, e - s.begin());                    }
             sh = dw * s;
-            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth-(sh.end()-e), M, 0) = norm * *e;      }
+            for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), M, 0) = norm * *e;    }
             
             // case f_{0,M}
-            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(M, 0, e - s.begin());                  }
+            for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(M, 0, e - s.begin());                    }
             sh = dw * s;
-            if  (M & 1)                                                                    { sh *= -1;                                          }
-            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth-(sh.end()-e), 0, M) = norm * *e;      }
+            if  (M & 1)                              { sh *= -1;                                            }
+            for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), 0, M) = norm * *e;    }
             
             // case f_{-M,0}
             fliplr(dw);
-            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(0, bw2 - M, e - s.begin());            }
+            for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(0, bw2 - M, e - s.begin());              }
             sh = dw * s;
             if (M & 1)  // if M is odd
             {
-                for (vector< complex< double > >::iterator e = sh.begin(); e < sh.end(); e += 2)     { *e *= -1;                                }
+                for (e = sh.begin(); e < sh.end(); e += 2)     { *e *= -1;                                  }
             }
             else        // if M is even
             {
-                for (vector< complex< double > >::iterator e = sh.begin() + 1; e < sh.end(); e += 2) { *e *= -1;                                }
+                for (e = sh.begin() + 1; e < sh.end(); e += 2) { *e *= -1;                                  }
             }
-            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth-(sh.end()-e), -M, 0) = norm * *e;     }
+            for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), -M, 0) = norm * *e;   }
             
             // case f_{0,-M}
-            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(bw2 - M, 0, e - s.begin());            }
+            for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(bw2 - M, 0, e - s.begin());              }
             sh = dw * s;
-            for (vector< complex< double > >::iterator e = sh.begin()+1; e < sh.end(); e += 2) { *e *= -1;                                      }
-            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth-(sh.end()-e), 0, -M) = norm * *e;     }
+            for (e = sh.begin()+1; e < sh.end(); e += 2) { *e *= -1;                                        }
+            for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), 0, -M) = norm * *e;   }
             
             // get new wigner matrix
             DWT::weighted_wigner_d_matrix(dw, bandwidth, M, M, weights);
             dw *= -1;
             
             // case f_{M, M}
-            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(M, M, e - s.begin());                  }
+            for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(M, M, e - s.begin());                    }
             sh = dw * s;
-            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth-(sh.end()-e), M, M) = norm * *e;      }
+            for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), M, M) = norm * *e;    }
             
             // case f_{-M, -M}
-            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(bw2 - M, bw2 - M, e - s.begin());      }
+            for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(bw2 - M, bw2 - M, e - s.begin());        }
             sh = dw * s;
-            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth-(sh.end()-e), -M, -M) = norm * *e;    }
+            for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), -M, -M) = norm * *e;  }
             
             // Modify dw for the last two cases. flip matrix from left to right and negate signs of
             // every second row with odd row indices.
@@ -208,14 +195,14 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
             
             // A little arithmetic error is occuring in the following calculation... I do not exactly know why
             // case f_{M, -M}
-            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(bw2 - M, M, e - s.begin());            }
+            for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(bw2 - M, M, e - s.begin());              }
             sh = dw * s;
-            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth-(sh.end()-e), M, -M) = norm * *e;     }
+            for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), M, -M) = norm * *e;   }
             
             // case f_{-M, M}
-            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(M, bw2 - M, e - s.begin());            }
+            for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(M, bw2 - M, e - s.begin());              }
             sh = dw * s;
-            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth-(sh.end()-e), -M, M) = norm * *e;     }
+            for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), -M, M) = norm * *e;   }
         }
         
         // Fused two loops per hand
@@ -224,7 +211,7 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
         //     for (Mp = 1; Mp < M; ++Mp)
         //
         // which now is equivalent to the following loop
-        #pragma omp for private(MMp, M, Mp) firstprivate(dw, s, sh) schedule(dynamic) nowait
+        #pragma omp for private(MMp, M, Mp, e) firstprivate(dw, s, sh) schedule(dynamic) nowait
         for (MMp = 0; MMp < (bandwidth - 2) * (bandwidth - 1) / 2; ++MMp)
         {
             // reconstructing nested loop indices
@@ -240,28 +227,28 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
             DWT::weighted_wigner_d_matrix(dw, bandwidth, M, Mp, weights);
             
             // case f_{M, Mp}
-            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(Mp, M, e - s.begin());                 }
+            for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(Mp, M, e - s.begin());                   }
             sh  = dw * s;
             sh *= -1;
-            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth-(sh.end()-e), M, Mp) = norm * *e;     }
+            for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), M, Mp) = norm * *e;   }
             
             // case f_{Mp, M}
-            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(M, Mp, e - s.begin());                 }
+            for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(M, Mp, e - s.begin());                   }
             sh = dw * s;
-            if  (!((M - Mp) & 1))                                                          { sh *= -1;                                          }
-            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth-(sh.end()-e), Mp, M) = norm * *e;     }
+            if  (!((M - Mp) & 1))                    { sh *= -1;                                            }
+            for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), Mp, M) = norm * *e;   }
             
             // case f_{-M, -Mp}
-            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(bw2 - Mp, bw2 - M, e - s.begin());     }
+            for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(bw2 - Mp, bw2 - M, e - s.begin());       }
             sh = dw * s;
-            if  (!((M - Mp) & 1))                                                          { sh *= -1;                                          }
-            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth-(sh.end()-e), -M, -Mp) = norm * *e;   }
+            if  (!((M - Mp) & 1))                    { sh *= -1;                                            }
+            for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), -M, -Mp) = norm * *e; }
             
             // case f_{-Mp, -M}
-            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(bw2 - M, bw2 - Mp, e - s.begin());     }
+            for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(bw2 - M, bw2 - Mp, e - s.begin());       }
             sh  = dw * s;
             sh *= -1;
-            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth-(sh.end()-e), -Mp, -M) = norm * *e;   }
+            for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), -Mp, -M) = norm * *e; }
             
             // modify wigner d-matrix for next four cases. This just works because the weight
             // function is also symmetric like the wigner-d matrix. flip left-right the dw
@@ -269,30 +256,30 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
             fliplr_ne2nderow(dw);
             
             // case f_{Mp, -M}
-            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(bw2 - M, Mp, e - s.begin());           }
+            for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(bw2 - M, Mp, e - s.begin());             }
             sh = dw * s;
-            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth-(sh.end()-e), Mp, -M) = norm * *e;    }
+            for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), Mp, -M) = norm * *e;  }
             
             // case f_{M, -Mp}
-            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(bw2 - Mp, M, e - s.begin());           }
+            for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(bw2 - Mp, M, e - s.begin());             }
             sh = dw * s;
-            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth-(sh.end()-e), M, -Mp) = norm * *e;    }
+            for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), M, -Mp) = norm * *e;  }
             
             // alter signs
             if ((M - Mp) & 1)
             {
-                for (const double* e = dw.mem; e < dw.mem + dw.rows * dw.cols; ++e)        { access::rw(*e) *= -1;                              }
+                for (m = dw.begin(); m != dw.end(); ++m) { access::rw(*m) *= -1;                            }
             }
             
             // case f_{-Mp, M}
-            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(M, bw2 - Mp, e - s.begin());           }
+            for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(M, bw2 - Mp, e - s.begin());             }
             sh = dw * s;
-            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth-(sh.end()-e), -Mp, M) = norm * *e;    }
+            for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), -Mp, M) = norm * *e;  }
             
             // case f_{-M, Mp}
-            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { *e = sample(Mp, bw2 - M, e - s.begin());           }
+            for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(Mp, bw2 - M, e - s.begin());             }
             sh = dw * s;
-            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth-(sh.end()-e), -M, Mp) = norm * *e;    }
+            for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), -M, Mp) = norm * *e;  }
         }
     }
 }

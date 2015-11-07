@@ -75,18 +75,10 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
      ** Check parameters                                            **
      *****************************************************************/
     // Check if the grid has same size in each dimension
-    if (synthesis.rows != synthesis.cols || synthesis.rows != synthesis.lays)
-    {
-        psofft_warning("%s", "all ISOFT synthesis grid dimensions should be equal.");
-        return;
-    }
+    psofft_warning_return(synthesis.rows != synthesis.cols || synthesis.rows != synthesis.lays, "%s", "all IDSOFT synthesis grid dimensions should be equal.");
     
     // Check if grid has odd dimensions
-    if (synthesis.rows & 1)
-    {
-        psofft_warning("%s", "ISOFT synthesis grid dimensions are not even.");
-        return;
-    }
+    psofft_warning_return(synthesis.rows & 1, "%s", "IDSOFT synthesis grid dimensions are not even.");
     
     // Extract bandwidth
     int bandwidth = static_cast< int >(synthesis.cols / 2);
@@ -95,18 +87,11 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
     const int bw2 = 2 * bandwidth;
     
     // Check if Fourier coefficients container dimension matches sample dimension
-    if (bandwidth != fc.bandwidth)
-    {
-        psofft_warning("%s", "ISOFT Fourier coefficients container bandwidth does not match to synthesis grid bandwidth.");
-        return;
-    }
+    psofft_warning_return(bandwidth != fc.bandwidth, "%s", "IDSOFT Fourier coefficients container bandwidth does not match to synthesis grid bandwidth.");
     
     // print warinings for serial implementation
     #ifndef _OPENMP
-    if (threads != 1)
-    {
-        psofft_warning("%s", "compiler does not support OpenMP. Changing the number of threads for the ISOFT has no effect.");
-    }
+    psofft_warning(threads != 1, "%s", "compiler does not support OpenMP. Changing the number of threads for the IDSOFT has no effect.");
     #endif
     
     /*****************************************************************
@@ -125,11 +110,13 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
     
     // defining needed indices
     int MMp, M, Mp;
+    vector< complex< double > >::iterator e;
+    matrix< double >::lin_iterator m;
     
     // inverse DWT for M = 0, M' = 0
-    for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth-(sh.end()-e), 0, 0);              }
+    for (e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth-(sh.end()-e), 0, 0);                }
     vector< complex< double > > s = d * sh;
-    for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { synthesis(0, 0, e - s.begin()) = *e;                       }
+    for (e = s.begin() ; e != s.end() ; ++e) { synthesis(0, 0, e - s.begin()) = *e;                         }
     
     /*****************************************************************
      ** Iterate over all combinations of M and M'                   **
@@ -137,7 +124,7 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
     #pragma omp parallel default(shared) if(bandwidth >= DSOFT_THRESHOLD) num_threads(threads)
     {
         
-        #pragma omp for private(M, d, s, sh) schedule(dynamic) nowait
+        #pragma omp for private(M, d, s, sh, e) schedule(dynamic) nowait
         for (M = 1; M < bandwidth; ++M)
         {
             d  = matrix< double >(bandwidth - M, 2 * bandwidth);
@@ -152,35 +139,35 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
              ** Make use of symmetries                                      **
              *****************************************************************/
             // case f_{M,0}
-            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth-(sh.end()-e), M, 0);      }
+            for (e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth - (sh.end() - e), M, 0);    }
             s = d * sh;
-            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { synthesis(0, M, e - s.begin()) = *e;               }
+            for (e = s.begin() ; e != s.end() ; ++e) { synthesis(0, M, e - s.begin()) = *e;                 }
             
             // case f_{0,M}
-            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth-(sh.end()-e), 0, M);      }
-            if  (M & 1) { s = d * (sh * -1); } else                { s = d * sh;                                                                }
-            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { synthesis(M, 0, e - s.begin()) = *e;               }
+            for (e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth - (sh.end() - e), 0, M);    }
+            if  (M & 1) { s = d * (sh * -1); } else  { s = d * sh;                                          }
+            for (e = s.begin() ; e != s.end() ; ++e) { synthesis(M, 0, e - s.begin()) = *e;                 }
             
             flipud(d);
             
             // case f_{-M,0}
-            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth-(sh.end()-e), -M, 0);     }
+            for (e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth - (sh.end() - e), -M, 0);   }
             if (M & 1)
             {
-                for (vector< complex< double > >::iterator e = sh.begin(); e < sh.end(); e+=2)     { *e *= -1;                                  }
+                for (e = sh.begin(); e < sh.end(); e+=2)     { *e *= -1;                                    }
             }
             else
             {
-                for (vector< complex< double > >::iterator e = sh.begin() + 1; e < sh.end(); e+=2) { *e *= -1;                                  }
+                for (e = sh.begin() + 1; e < sh.end(); e+=2) { *e *= -1;                                    }
             }
             s = d * sh;
-            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e)  { synthesis(0, bw2 - M, e - s.begin()) = *e;        }
+            for (e = s.begin() ; e != s.end() ; ++e)  { synthesis(0, bw2 - M, e - s.begin()) = *e;          }
             
             // case f_{0,-M}
-            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e)  { *e = norm * fc(bandwidth-(sh.end()-e), 0, -M);    }
-            for (vector< complex< double > >::iterator e = sh.begin()+1; e < sh.end(); e+=2){ *e *= -1;                                         }
+            for (e = sh.begin(); e != sh.end(); ++e)  { *e = norm * fc(bandwidth - (sh.end() - e), 0, -M);  }
+            for (e = sh.begin()+1; e < sh.end(); e+=2){ *e *= -1;                                           }
             s = d * sh;
-            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e)  { synthesis(bw2 - M, 0, e - s.begin()) = *e;        }
+            for (e = s.begin() ; e != s.end() ; ++e)  { synthesis(bw2 - M, 0, e - s.begin()) = *e;          }
             
             // get new wigner matrix
             d  = matrix< double >(bandwidth - M, 2 * bandwidth);
@@ -190,14 +177,14 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
             d.transpose();
             
             // case f_{M,M}
-            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth-(sh.end()-e), M, M);      }
+            for (e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth - (sh.end() - e), M, M);    }
             s = d * sh;
-            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { synthesis(M, M, e - s.begin()) = *e;               }
+            for (e = s.begin() ; e != s.end() ; ++e) { synthesis(M, M, e - s.begin()) = *e;                 }
             
             // case f_{-M,-M}
-            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth-(sh.end()-e), -M, -M);    }
+            for (e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth - (sh.end() - e), -M, -M);  }
             s = d * sh;
-            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { synthesis(bw2 - M, bw2 - M, e - s.begin()) = *e;   }
+            for (e = s.begin() ; e != s.end() ; ++e) { synthesis(bw2 - M, bw2 - M, e - s.begin()) = *e;     }
             
             // Modify dw for the last two cases. flip matrix from left to right and negate every
             // second row with odd row indices.
@@ -205,14 +192,14 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
             
             // An little arithmetic error is occuring in the following calculation... I do not exactly know why...
             // case f_{M,-M}
-            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth-(sh.end()-e), M, -M);     }
+            for (e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth - (sh.end() - e), M, -M);   }
             s = d * sh;
-            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { synthesis(bw2 - M, M, e - s.begin()) = *e;         }
+            for (e = s.begin() ; e != s.end() ; ++e) { synthesis(bw2 - M, M, e - s.begin()) = *e;           }
             
             // case f_{-M,M}
-            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth-(sh.end()-e), -M, M);     }
+            for (e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth - (sh.end() - e), -M, M);   }
             s = d * sh;
-            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { synthesis(M, bw2 - M, e - s.begin()) = *e;         }
+            for (e = s.begin() ; e != s.end() ; ++e) { synthesis(M, bw2 - M, e - s.begin()) = *e;           }
         }
         
         // Fused two loops per hand
@@ -221,7 +208,7 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
         //     for (Mp = 1; Mp < M; ++Mp)
         //
         // which now is equivalent to the following loop
-        #pragma omp for private(MMp, M, Mp, d, s, sh) schedule(dynamic) nowait
+        #pragma omp for private(MMp, M, Mp, d, s, sh, e) schedule(dynamic) nowait
         for (MMp = 0; MMp < (bandwidth - 2) * (bandwidth - 1) / 2; ++MMp)
         {
             // reconstructing indices of the two nested for loops
@@ -240,28 +227,28 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
             sh = vector< complex< double > >(d.cols, vector< complex< double > >::COLUMN);
             
             // case f_{M,Mp}
-            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth-(sh.end()-e), M, Mp);     }
+            for (e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth - (sh.end() - e), M, Mp);   }
             sh *= -1;
             s  = d * sh;
-            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { synthesis(Mp, M, e - s.begin()) = *e;              }
+            for (e = s.begin() ; e != s.end() ; ++e) { synthesis(Mp, M, e - s.begin()) = *e;                }
             
             // case f_{Mp,M}
-            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth-(sh.end()-e), Mp, M);     }
-            if  (!((M - Mp) & 1))                                                          { sh *= -1;                                          }
+            for (e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth - (sh.end() - e), Mp, M);   }
+            if  (!((M - Mp) & 1))                    { sh *= -1;                                            }
             s = d * sh;
-            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { synthesis(M, Mp, e - s.begin()) = *e;              }
+            for (e = s.begin() ; e != s.end() ; ++e) { synthesis(M, Mp, e - s.begin()) = *e;                }
             
             // case f_{-M,-Mp}
-            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth-(sh.end()-e), -M, -Mp);   }
-            if  (!((M - Mp) & 1))                                                          { sh *= -1;                                          }
+            for (e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth - (sh.end() - e), -M, -Mp); }
+            if  (!((M - Mp) & 1))                    { sh *= -1;                                            }
             s = d * sh;
-            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { synthesis(bw2 - Mp, bw2 - M, e - s.begin()) = *e;  }
+            for (e = s.begin() ; e != s.end() ; ++e) { synthesis(bw2 - Mp, bw2 - M, e - s.begin()) = *e;    }
             
             // case f_{-Mp,-M}
-            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth-(sh.end()-e), -Mp, -M);   }
+            for (e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth - (sh.end() - e), -Mp, -M); }
             sh *= -1;
             s  = d * sh;
-            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { synthesis(bw2 - M, bw2 - Mp, e - s.begin()) = *e;  }
+            for (e = s.begin() ; e != s.end() ; ++e) { synthesis(bw2 - M, bw2 - Mp, e - s.begin()) = *e;    }
             
             // modify wigner d-matrix for next four cases. This just works because the weight
             // function is also symmetric like the wigner-d matrix. flip up-dow the d
@@ -269,30 +256,30 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
             flipud_ne2ndecol(d);
             
             // case f_{Mp,-M}
-            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth-(sh.end()-e), Mp, -M);    }
+            for (e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth - (sh.end() - e), Mp, -M);  }
             s = d * sh;
-            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { synthesis(bw2 - M, Mp, e - s.begin()) = *e;        }
+            for (e = s.begin() ; e != s.end() ; ++e) { synthesis(bw2 - M, Mp, e - s.begin()) = *e;          }
             
             // case f_{M,-Mp}
-            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth-(sh.end()-e), M, -Mp);    }
+            for (e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth - (sh.end() - e), M, -Mp);  }
             s = d * sh;
-            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { synthesis(bw2 - Mp, M, e - s.begin()) = *e;        }
+            for (e = s.begin() ; e != s.end() ; ++e) { synthesis(bw2 - Mp, M, e - s.begin()) = *e;          }
             
             // alter signs
             if ((M - Mp) & 1)
             {
-                for (const double* e = d.mem; e < d.mem + d.rows * d.cols; ++e)            { access::rw(*e) *= -1;                              }
+                for (m = d.begin(); m != d.end(); ++m) { access::rw(*m) *= -1;                              }
             }
             
             // case f_{-Mp,M}
-            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth-(sh.end()-e), -Mp, M);    }
+            for (e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth - (sh.end() - e), -Mp, M);  }
             s = d * sh;
-            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { synthesis(M, bw2 - Mp, e - s.begin()) = *e;        }
+            for (e = s.begin() ; e != s.end() ; ++e) { synthesis(M, bw2 - Mp, e - s.begin()) = *e;          }
             
             // case f_{-M,Mp}
-            for (vector< complex< double > >::iterator e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth-(sh.end()-e), -M, Mp);    }
+            for (e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth - (sh.end() - e), -M, Mp);  }
             s = d * sh;
-            for (vector< complex< double > >::iterator e = s.begin() ; e != s.end() ; ++e) { synthesis(Mp, bw2 - M, e - s.begin()) = *e;        }
+            for (e = s.begin() ; e != s.end() ; ++e) { synthesis(Mp, bw2 - M, e - s.begin()) = *e;          }
         }
     }
     

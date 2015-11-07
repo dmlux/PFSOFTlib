@@ -63,11 +63,7 @@ template< typename T >
 inline
 void_number_type< T > quadrature_weights(vector< T >& vec)
 {
-    if (vec.size & 1)
-    {
-        psofft_warning("%s", "uneven vector length in DWT::quadrature_weights. ");
-        return;
-    }
+    psofft_warning_return(vec.size & 1, "%s", "uneven vector length in DWT::quadrature_weights. ");
     
     int i, k, bandwidth = vec.size / 2;
     for (i = 0; i < bandwidth; ++i)
@@ -112,11 +108,7 @@ void_number_type< T > weighted_wigner_d_matrix(matrix< T >& wig, const int& band
     // Definition of used indices and the matrix that will be returned
     int i, j, minJ = std::max(abs(M), abs(Mp));
     
-    if ( wig.rows != bandwidth - minJ || wig.cols != 2 * bandwidth )
-    {
-        psofft_warning("%s", "dimension mismatch between input matrix and function arguments in DWT::weighted_wigner_d_matrix.");
-        return;
-    }
+    psofft_warning_return(wig.rows != bandwidth - minJ || wig.cols != 2 * bandwidth, "%s", "dimension mismatch between input matrix and function arguments in DWT::weighted_wigner_d_matrix.");
     
     // Compute root coefficient for the base case
     T normFactor  = sqrt((2.0 * minJ + 1.0)/2.0);
@@ -246,11 +238,7 @@ void_number_type< T > wigner_d_matrix(matrix< T >& wig, const int& bandwidth, co
     // Definition of used indices and the matrix that will be returned
     int i, j, minJ = std::max(abs(M), abs(Mp));
     
-    if ( wig.rows != bandwidth - minJ || wig.cols != 2 * bandwidth )
-    {
-        psofft_warning("%s", "dimension mismatch between input matrix and function arguments in DWT::weighted_wigner_d_matrix.");
-        return;
-    }
+    psofft_warning_return(wig.rows != bandwidth - minJ || wig.cols != 2 * bandwidth, "%s", "dimension mismatch between input matrix and function arguments in DWT::weighted_wigner_d_matrix.");
     
     // Compute root coefficient for the base case
     T normFactor  = sqrt((2.0 * minJ + 1.0)/2.0);

@@ -57,13 +57,14 @@ class
 matrix< T, if_pod_type< T > >
 {
 public:
-    typedef T pod_type;     //!< The POD type of matrix elements
+    // typedefs
+    typedef T pod_type;                 //!< The POD type of matrix elements
+    typedef typename smart_array< pod_type >::iterator lin_iterator;
     
     // ivars
-    const size_t rows;      //!< Number of matrix rows
-    const size_t cols;      //!< Number of matrix columns
-    
-    const pod_type* mem;    //!< Matrix memory
+    const smart_array< pod_type > mem;  //!< Matrix memory
+    const size_t rows;                  //!< Number of matrix rows
+    const size_t cols;                  //!< Number of matrix columns
     
     // methods
     inline                                     ~matrix();
@@ -72,15 +73,12 @@ public:
     inline                                      matrix(const size_t& m, const size_t& n);
     inline                                      matrix(const size_t& mn);
     inline                                      matrix(const size_t& m, const size_t& n, const pod_type& initial);
-    
     inline                                      matrix(const matrix< pod_type >& A);
-    inline                                      matrix(matrix< pod_type >&& A);
     
     inline       vector< pod_type >             operator*(const vector< pod_type >& v);
     inline       vector< complex< pod_type > >  operator*(const vector< complex< pod_type > >& v);
     
     inline const matrix< pod_type >&            operator=(const matrix< pod_type >& A);
-    inline const matrix< pod_type >&            operator=(matrix< pod_type >&& A);
     
     inline const matrix< pod_type >&            operator*=(const vector< pod_type >& v);
     inline       matrix< pod_type >&            operator*=(const pod_type& rhs);
@@ -88,13 +86,17 @@ public:
     inline       matrix< pod_type >             operator+();
     inline       matrix< pod_type >             operator-();
     
-    inline       matrix< pod_type >                             operator*(const pod_type& rhs);
+    inline       matrix< pod_type >             operator*(const pod_type& rhs);
     inline       matrix< complex< pod_type > >  operator*(const complex< pod_type >& rhs);
     
     inline       pod_type&                      operator()(const size_t& i, const size_t& j);
     inline const pod_type&                      operator()(const size_t& i, const size_t& j) const;
     
     inline       void                           transpose();
+    
+    // iterator methods
+    inline       lin_iterator                   begin();
+    inline       lin_iterator                   end();
 };
 
 /*!
@@ -107,7 +109,6 @@ inline
 matrix< T, if_pod_type< T > >::matrix()
     : rows(0)
     , cols(0)
-    , mem(nullptr)
 {}
 
 /*!
@@ -118,9 +119,7 @@ matrix< T, if_pod_type< T > >::matrix()
 template< typename T >
 inline
 matrix< T, if_pod_type< T > >::~matrix()
-{
-    delete [] mem;
-}
+{}
 
 /*!
  * @brief           Constructs a matrix with given parameters
@@ -137,8 +136,7 @@ matrix< T, if_pod_type< T > >::matrix(const size_t& m, const size_t& n)
     : rows(m)
     , cols(n)
 {
-    size_t cap  = m * n;
-    mem         = new T[cap];
+    access::rw(mem) = smart_array< pod_type >(rows * cols);
 }
 
 /*!
@@ -155,8 +153,7 @@ matrix< T, if_pod_type< T > >::matrix(const size_t& mn)
     : rows(mn)
     , cols(mn)
 {
-    size_t cap  = mn * mn;
-    mem         = new T[cap];
+    access::rw(mem) = smart_array< pod_type >(rows * cols);
 }
 
 /*!
@@ -174,19 +171,13 @@ matrix< T, if_pod_type< T > >::matrix(const size_t& m, const size_t& n, const T&
     : rows(m)
     , cols(n)
 {
-    size_t cap  = m * n;
-    mem         = new T[cap];
+    access::rw(mem) = smart_array< pod_type >(rows * cols);
     
-    if (cap > 0)
+    if (rows * cols > 0)
     {
-        if (initial == 0 || initial == -1)
+        for (typename smart_array< pod_type >::iterator it = access::rw(mem).begin(); it != access::rw(mem).end(); ++it)
         {
-            // fastest possible assembler routine
-            memset(access::rwp(mem), initial, cap * sizeof(T));
-        }
-        else
-        {
-            std::fill(access::rwp(mem), access::rwp(mem) + cap, initial);
+            *it = initial;
         }
     }
 }
@@ -204,34 +195,7 @@ matrix< T, if_pod_type< T > >::matrix(const matrix< T >& A)
     : rows(A.rows)
     , cols(A.cols)
 {
-    size_t cap  = rows * cols;
-    mem         = new T[cap];
-    
-    if (cap > 0)
-    {
-        memcpy(access::rwp(mem), access::rwp(A.mem), cap * sizeof(T));
-    }
-}
-
-/*!
- * @brief           A move constructor to copy an r-value matrix into a new matrix
- * @details         Takes the memory of the r-value matrix \f$A\f$ and copies all other
- *                  instance variables. The resulting matrix is in the same state
- *                  than the original matrix. A move constructor has better performance
- *                  by assigning matrices that were calculated in one expression.
- *
- * @param[in,out]   A The r-value matrix \f$A\f$ which content should be moved to a
- *                  new matrix.
- */
-template< typename T >
-inline
-matrix< T, if_pod_type< T > >::matrix(matrix< T >&& A)
-    : rows(A.rows)
-    , cols(A.cols)
-{
-    const T* tmp = mem;
-    mem           = A.mem;
-    A.mem         = tmp;
+    access::rw(mem) = A.mem;
 }
 
 /*!
@@ -252,46 +216,9 @@ const matrix< T >&  matrix< T, if_pod_type< T > >::operator=(const matrix< T >& 
         return *this;
     }
     
-    rows        = A.rows;
-    cols        = A.cols;
-    size_t cap  = rows * cols;
-    
-    delete [] mem;
-    
-    mem = new T[cap];
-    
-    if (cap > 0)
-    {
-        memcpy(mem, A.mem, cap * sizeof(T));
-    }
-    
-    return *this;
-}
-
-/*!
- * @brief           The assignment operator to copy matrices by moving its contents.
- * @details         Moving the contents of a r-value matrix into a new matrix
- *
- * @param[in]       A The r-value matrix that is supposed to be copied
- *
- * @return          A new matrix that has the same state than \f$A\f$ and containing
- *                  the same values.
- */
-template< typename T >
-inline
-const matrix< T >&  matrix< T, if_pod_type< T > >::operator=(matrix< T >&& A)
-{
-    if ( this == &A )
-    {
-        return *this;
-    }
-    
     access::rw(rows) = A.rows;
     access::rw(cols) = A.cols;
-    
-    const T* tmp = mem;
-    mem           = A.mem;
-    A.mem         = tmp;
+    access::rw(mem)  = A.mem;
     
     return *this;
 }
@@ -309,8 +236,8 @@ template< typename T >
 inline
 matrix< T > matrix< T, if_pod_type< T > >::operator+()
 {
-    matrix< T > C(rows, cols);
-    memcpy(C.mem, mem, rows * cols * sizeof(T));
+    matrix< pod_type > C(rows, cols);
+    access::rw(C.mem) = mem;
     
     return C;
 }
@@ -328,7 +255,7 @@ template< typename T >
 inline
 matrix< T > matrix< T, if_pod_type< T > >::operator-()
 {
-    matrix< T > C(rows, cols);
+    matrix< pod_type > C(rows, cols);
     
     size_t i, cap = rows * cols;
     for (i = 0; i < cap; ++i)
@@ -367,13 +294,11 @@ inline
 matrix< T > matrix< T, if_pod_type< T > >::operator*(const T& rhs)
 {
     // result matrix
-    matrix< T > C(rows, cols);
-    
-    // capacity
-    size_t cap = rows * cols;
+    matrix< pod_type > C(rows, cols);
+    typedef typename smart_array< pod_type >::iterator mem_iterator;
     
     // iterate over temporary and internal memory and scale data
-    for (const T *e1 = mem, *e2 = C.mem; e1 != mem + cap; ++e1, ++e2)
+    for (mem_iterator e2 = access::rw(C.mem).begin(), e1 = access::rw(mem).begin(); e2 != access::rw(C.mem).end(); ++e1, ++e2)
     {
         access::rw(*e2) = *e1 * rhs;
     }
@@ -410,11 +335,12 @@ inline
 matrix< complex< T > > matrix< T, if_pod_type< T > >::operator*(const complex< T >& rhs)
 {
     matrix< complex< T > > C(rows, cols);
+    typedef typename smart_array< pod_type >::iterator mem_iterator;
     
-    size_t i, cap = rows * cols;
-    for (i = 0; i < cap; ++i)
+    // iterate over temporary and internal memory and scale data
+    for (mem_iterator e2 = access::rw(C.mem).begin(), e1 = access::rw(mem).begin(); e2 != access::rw(C.mem).end(); ++e1, ++e2)
     {
-        C.mem = complex< T >(mem[i], 0) * rhs;
+        access::rw(*e2) = complex< T >(*e1, 0) * rhs;
     }
     
     return C;
@@ -433,12 +359,10 @@ template< typename T >
 inline
 vector< complex< T > > matrix< T, if_pod_type< T > >::operator*(const vector< complex< T > >& v)
 {
-    if (cols != v.size || v.type == vector< complex< T > >::type::ROW)
-    {
-        psofft_error("%s", "dimension mismatch in matrix-complex vector multiplication.");
-    }
+    typedef vector< complex< T > > cx_T_vector;
+    psofft_error(cols != v.size || v.type == cx_T_vector::ROW, "%s", "dimension mismatch in matrix-complex vector multiplication.");
     
-    vector< complex< T > > result(rows, 0, v.type);
+    cx_T_vector result(rows, 0, v.type);
     
     size_t i, j;
     for (i = 0; i < cols; ++i)
@@ -464,8 +388,9 @@ template< typename T >
 inline
 matrix< T >& matrix< T, if_pod_type< T > >::operator*=(const T& rhs)
 {
-    size_t cap = rows * cols;
-    for (const T* e = mem; e != mem + cap; ++e)
+    typedef typename smart_array< pod_type >::iterator mem_iterator;
+    
+    for (mem_iterator e = access::rw(mem).begin(); e != access::rw(mem).end(); ++e)
     {
         access::rw(*e) *= rhs;
     }
@@ -519,7 +444,7 @@ template< typename T >
 inline
 void matrix< T, if_pod_type< T > >::transpose()
 {
-    T *tmp_mem  = new T[rows * cols];
+    smart_array< pod_type > tmp_mem(rows * cols);
     size_t tmp_r = cols;
     size_t tmp_c = rows;
     
@@ -532,10 +457,23 @@ void matrix< T, if_pod_type< T > >::transpose()
         }
     }
     
-    delete [] mem;
     access::rw(rows) = tmp_r;
     access::rw(cols) = tmp_c;
-    mem              = tmp_mem;
+    access::rw(mem)  = tmp_mem;
+}
+
+template< typename T >
+inline
+typename matrix< T, if_pod_type< T > >::lin_iterator matrix< T, if_pod_type< T > >::begin()
+{
+    return access::rw(mem).begin();
+}
+
+template< typename T >
+inline
+typename matrix< T, if_pod_type< T > >::lin_iterator matrix< T, if_pod_type< T > >::end()
+{
+    return access::rw(mem).end();
 }
 
 /*!
