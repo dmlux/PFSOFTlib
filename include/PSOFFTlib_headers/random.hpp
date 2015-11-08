@@ -159,7 +159,7 @@ template< typename T >
 inline
 void_real_type< T > rand(vector< complex< T > >& vec, const double& min, const double& max)
 {
-    psofft_warning_return(min > max, "%s", "min value is greater than max value in rand function for complex vectors.");
+    psofft_cond_w_ret(min > max, "%s", "min value is greater than max value in rand function for complex vectors.");
     
     // create timeval object
     struct timeval tv;

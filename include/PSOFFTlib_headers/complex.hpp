@@ -60,39 +60,40 @@ template< typename T >
 class complex
 {
 public:
-    typedef T pod_type;
+    // typedefs
+    typedef T pod_type; // POD type of the real and imaginary number parts
     
-    pod_type re;   //!< The real part of the complex number
-    pod_type im;   //!< The imaginary part of the complex number
+    // instance variables
+    pod_type re;        //!< The real part of the complex number
+    pod_type im;        //!< The imaginary part of the complex number
     
-    inline                            ~complex();
-    inline                             complex();
-    inline                             complex(const pod_type real_imag);
-    inline                             complex(const pod_type real, const pod_type imag);
-    inline                             complex(const complex< pod_type >& c);
+    // constructors and destructor
+    inline                                           ~complex();
+    inline                                            complex();
+    inline                                            complex(const pod_type& real_imag);
+    inline                                            complex(const pod_type& real, const pod_type& imag);
+    inline                                            complex(const complex< pod_type >& c);
     
-    inline       pod_type              abs() const;
-    inline       void                  polar(const pod_type& rho, const pod_type& theta = 0);
+    // special methods
+    inline       pod_type                             abs() const;
+    inline       void                                 polar(const pod_type& rho, const pod_type& theta = 0);
     
-    inline       complex< pod_type >   operator+(const complex< pod_type >& rhs);
-    inline       complex< pod_type >   operator-(const complex< pod_type >& rhs);
-    inline       complex< pod_type >   operator*(const complex< pod_type >& rhs);
-    inline       complex< pod_type >   operator/(const complex< pod_type >& rhs);
+    // overloaded operators
+    inline       complex< pod_type >                  operator+(const complex< pod_type >& rhs);
+    inline       complex< pod_type >                  operator-(const complex< pod_type >& rhs);
+    inline       complex< pod_type >                  operator*(const complex< pod_type >& rhs);
     
-    inline const complex< pod_type >&  operator+=(const complex< pod_type >& rhs);
-    inline const complex< pod_type >&  operator-=(const complex< pod_type >& rhs);
-    inline const complex< pod_type >&  operator*=(const complex< pod_type >& rhs);
-    inline const complex< pod_type >&  operator/=(const complex< pod_type >& rhs);
+    inline const complex< pod_type >&                 operator+=(const complex< pod_type >& rhs);
+    inline const complex< pod_type >&                 operator-=(const complex< pod_type >& rhs);
+    inline const complex< pod_type >&                 operator*=(const complex< pod_type >& rhs);
     
     template< typename U > inline       complex< T >  operator+(const U& rhs);
     template< typename U > inline       complex< T >  operator-(const U& rhs);
     template< typename U > inline       complex< T >  operator*(const U& rhs);
-    template< typename U > inline       complex< T >  operator/(const U& rhs);
     
     template< typename U > inline const complex< T >& operator+=(const U& rhs);
     template< typename U > inline const complex< T >& operator-=(const U& rhs);
     template< typename U > inline const complex< T >& operator*=(const U& rhs);
-    template< typename U > inline const complex< T >& operator/=(const U& rhs);
 };
 
 
@@ -114,8 +115,8 @@ complex< T >::~complex()
 template< typename T >
 inline
 complex< T >::complex()
-: re(0)
-, im(0)
+    : re(0)
+    , im(0)
 {}
 
 
@@ -131,9 +132,9 @@ complex< T >::complex()
  */
 template< typename T >
 inline
-complex< T >::complex(const T real_imag)
-: re(real_imag)
-, im(real_imag)
+complex< T >::complex(const pod_type& real_imag)
+    : re(real_imag)
+    , im(real_imag)
 {}
 
 
@@ -153,9 +154,9 @@ complex< T >::complex(const T real_imag)
  */
 template< typename T >
 inline
-complex< T >::complex(const T real, const T imag)
-: re(real)
-, im(imag)
+complex< T >::complex(const pod_type& real, const pod_type& imag)
+    : re(real)
+    , im(imag)
 {}
 
 
@@ -168,9 +169,9 @@ complex< T >::complex(const T real, const T imag)
  */
 template< typename T >
 inline
-complex< T >::complex(const complex< T >& c)
-: re(c.re)
-, im(c.im)
+complex< T >::complex(const complex< pod_type >& c)
+    : re(c.re)
+    , im(c.im)
 {}
 
 /*!
@@ -189,15 +190,15 @@ template< typename T >
 inline
 T complex< T >::abs() const
 {
-    if (same_type< T, double >::value)
+    if (same_type< pod_type, double >::value)
     {
         return sqrt(re * re + im * im);
     }
-    else if (same_type< T, float >::value)
+    else if (same_type< pod_type, float >::value)
     {
         return sqrtf(re * re + im * im);
     }
-    else if (same_type< T, long double >::value)
+    else if (same_type< pod_type, long double >::value)
     {
         return sqrtl(re * re + im * im);
     }
@@ -226,27 +227,27 @@ T complex< T >::abs() const
  */
 template< typename T >
 inline
-void complex< T >::polar(const T& rho, const T& theta)
+void complex< T >::polar(const pod_type& rho, const pod_type& theta)
 {
-    if ( same_type< T, double >::value )
+    if ( same_type< pod_type, double >::value )
     {
         re = rho * cos(theta);
         im = rho * sin(theta);
     }
-    else if ( same_type< T, float >::value )
+    else if ( same_type< pod_type, float >::value )
     {
         re = rho * cosf(theta);
         im = rho * sinf(theta);
     }
-    else if ( same_type< T, long double >::value )
+    else if ( same_type< pod_type, long double >::value )
     {
         re = rho * cosl(theta);
         im = rho * sinl(theta);
     }
     else
     {
-        re = static_cast< T >(rho * cosf(static_cast< float >(theta)));
-        im = static_cast< T >(rho * cosf(static_cast< float >(theta)));
+        re = static_cast< pod_type >(rho * cosf(static_cast< float >(theta)));
+        im = static_cast< pod_type >(rho * cosf(static_cast< float >(theta)));
     }
 }
 
@@ -262,9 +263,9 @@ void complex< T >::polar(const T& rho, const T& theta)
  */
 template< typename T >
 inline
-complex< T > complex< T >::operator+(const complex< T >& rhs)
+complex< T > complex< T >::operator+(const complex< pod_type >& rhs)
 {
-    return complex< T >(re + rhs.re, im + rhs.im);
+    return complex< pod_type >(re + rhs.re, im + rhs.im);
 }
 
 /*!
@@ -281,9 +282,9 @@ complex< T > complex< T >::operator+(const complex< T >& rhs)
  */
 template< typename T >
 inline
-complex< T > complex< T >::operator-(const complex< T >& rhs)
+complex< T > complex< T >::operator-(const complex< pod_type >& rhs)
 {
-    return complex< T >(re - rhs.re, im - rhs.im);
+    return complex< pod_type >(re - rhs.re, im - rhs.im);
 }
 
 /*!
@@ -306,37 +307,9 @@ complex< T > complex< T >::operator-(const complex< T >& rhs)
  */
 template< typename T >
 inline
-complex< T > complex< T >::operator*(const complex< T >& rhs)
+complex< T > complex< T >::operator*(const complex< pod_type >& rhs)
 {
-    return complex< T >(re * rhs.re - im * rhs.im,   // real value of this number
-                        im * rhs.re + re * rhs.im);  // imag value of this number
-}
-
-/*!
- * @brief           Division operator for two complex numbers.
- * @details         Divides the given complex number from the current complex
- *                  number by applying the following calculation
- *                  \f{eqnarray*}{
- *                      \underline{z} &=& \underline{x}\cdot \underline{y}\\
- *                      \underline{z} &=& \left(\frac{\Re(\underline{x})\cdot\Re(\underline{y})
- *                          - \Im(\underline{x})\cdot\Im(\underline{y})}{\Re(\underline{y})^2
- *                          + \Im(\underline{y})^2}\right) + \left(\frac{\Im(\underline{x})\cdot\Re(\underline{y})
- *                          +\Re(\underline{x})\cdot\Im(\underline{y})}{\Re(\underline{y})^2
- *                          + \Im(\underline{y})^2}\right)i
- *                  \f}
- *                  where \f$\underline{x},\;\underline{y},\;\underline{z}\f$
- *                  denoting complex numbers.
- *
- * @param[in]       rhs The complex number that is supposed to be devided by.
- *
- * @return          A new complex number containing the division result.
- */
-template< typename T >
-inline
-complex< T > complex< T >::operator/(const complex< T >& rhs)
-{
-    return complex< T >((re * rhs.re + im * rhs.im) / rhs.norm(),    // real value
-                        (im * rhs.re - re * rhs.im) / rhs.norm());   // imag value
+    return complex< pod_type >(re * rhs.re - im * rhs.im, im * rhs.re + re * rhs.im);
 }
 
 /*!
@@ -378,7 +351,7 @@ template< typename U >
 inline
 complex< T > complex< T >::operator+(const U& rhs)
 {
-    complex< T > c(rhs, 0);
+    complex< pod_type > c(rhs, 0);
     return *this + c;
 }
 
@@ -400,7 +373,7 @@ template< typename U >
 inline
 complex< T > complex< T >::operator-(const U& rhs)
 {
-    complex< T > c(rhs, 0);
+    complex< pod_type > c(rhs, 0);
     return *this - c;
 }
 
@@ -422,30 +395,8 @@ template< typename U >
 inline
 complex< T > complex< T >::operator*(const U& rhs)
 {
-    complex< T > c(rhs, 0);
+    complex< pod_type > c(rhs, 0);
     return *this * c;
-}
-
-/*!
- * @brief           Division operator for an non-complex value and a complex number.
- * @details         Calculates the quotient of an non-complex value and a complex number
- *                  by casting the non-complex to a complex number and performing the
- *                  division of two complex numbers.
- *
- * @param[in]       rhs The non-complex value on the right handside of the division
- *                  operator.
- *
- * @return          A new complex number containing the result of the division.
- *
- * @sa              complex::operator/
- */
-template< typename T >
-template< typename U >
-inline
-complex< T > complex< T >::operator/(const U& rhs)
-{
-    complex< T > c(rhs, 0);
-    return *this / c;
 }
 
 
@@ -466,7 +417,7 @@ complex< T > complex< T >::operator/(const U& rhs)
  */
 template< typename T >
 inline
-const complex< T >& complex< T >::operator+=(const complex< T >& rhs)
+const complex< T >& complex< T >::operator+=(const complex< pod_type >& rhs)
 {
     re += rhs.re;
     im += rhs.im;
@@ -489,7 +440,7 @@ const complex< T >& complex< T >::operator+=(const complex< T >& rhs)
  */
 template< typename T >
 inline
-const complex< T >& complex< T >::operator-=(const complex< T >& rhs)
+const complex< T >& complex< T >::operator-=(const complex< pod_type >& rhs)
 {
     re -= rhs.re;
     im -= rhs.im;
@@ -512,33 +463,9 @@ const complex< T >& complex< T >::operator-=(const complex< T >& rhs)
  */
 template< typename T >
 inline
-const complex< T >& complex< T >::operator*=(const complex< T >& rhs)
+const complex< T >& complex< T >::operator*=(const complex< pod_type >& rhs)
 {
-    complex< T > c = *this * rhs;
-    re = c.re;
-    im = c.im;
-    return *this;
-}
-
-/*!
- * @brief           The division assignment operator for two complex numbers.
- * @details         Divides a complex number by a complex number and
- *                  storing the result in the current complex number by
- *                  overwriting the contents of the current complex number.
- *
- * @param[in]       rhs The complex number on the right handside of the
- *                  division assignment operator.
- *
- * @return          The reference to the current complex number
- *
- * @sa              For further information on how to divide two complex numbers
- *                  see complex::operator/
- */
-template< typename T >
-inline
-const complex< T >& complex< T >::operator/=(const complex< T >& rhs)
-{
-    complex< T > c = *this / rhs;
+    complex< pod_type > c = *this * rhs;
     re = c.re;
     im = c.im;
     return *this;
@@ -572,7 +499,7 @@ const complex< T >& complex< T >::operator+=(const U& rhs)
     }
     else
     {
-        complex< T > c(rhs, 0);
+        complex< pod_type > c(rhs, 0);
         *this += c;
     }
     return *this;
@@ -606,7 +533,7 @@ const complex< T >& complex< T >::operator-=(const U& rhs)
     }
     else
     {
-        complex< T > c(rhs, 0);
+        complex< pod_type > c(rhs, 0);
         *this -= c;
     }
     return *this;
@@ -640,133 +567,11 @@ const complex< T >& complex< T >::operator*=(const U& rhs)
     }
     else
     {
-        complex< T > c(rhs, 0);
+        complex< pod_type > c(rhs, 0);
         *this *= c;
     }
     return *this;
 }
-
-/*!
- * @brief           The division assignment operator for a complex number and
- *                  a non-complex number.
- * @details         Divides a non-complex number from the current complex number and
- *                  storing the result in the current complex number by
- *                  overwriting the contents of the current complex number. The
- *                  non-complex number gets casted into a complex number and
- *                  then the division is performed.
- *
- * @param[in]       rhs The complex number on the right handside of the
- *                  division assignment operator.
- *
- * @return          The reference to the current complex number
- *
- * @sa              For further information on how to divide two complex numbers
- *                  see complex::operator/
- */
-template< typename T >
-template< typename U >
-inline
-const complex< T >& complex< T >::operator/=(const U& rhs)
-{
-    if (is_complex< U >::value == true)
-    {
-        *this /= rhs;
-    }
-    else
-    {
-        complex< T > c(rhs, 0);
-        *this /= c;
-    }
-    return *this;
-}
-
-
-/*- Additional operators -*/
-
-
-///*!
-// * @brief           Multiplication operator for an non-complex value and a complex number.
-// * @details         Calculates the product of an non-complex value and a complex number
-// *                  by casting the non-complex to a complex number and performing the
-// *                  multiplication of two complex numbers.
-// *
-// * @param[in]       lhs The non-complex value on the left handside of the multiplication
-// *                  operator.
-// * @param[in]       rhs The complex value on the right handside of the multiplication
-// *                  operator.
-// *
-// * @return          A new complex number containing the result of the multiplication.
-// *
-// * @sa              complex::operator*
-// */
-//template<typename eT, typename T>
-//complex< eT > operator*(const T& lhs, complex< eT > rhs)
-//{
-//    return complex< eT >(lhs, 0) * rhs;
-//}
-//
-///*!
-// * @brief           Division operator for an non-complex value and a complex number.
-// * @details         Calculates the quotient of an non-complex value and a complex number
-// *                  by casting the non-complex to a complex number and performing the
-// *                  division of two complex numbers.
-// *
-// * @param[in]       lhs The non-complex value on the left handside of the division
-// *                  operator.
-// * @param[in]       rhs The complex value on the right handside of the division
-// *                  operator.
-// *
-// * @return          A new complex number containing the result of the division.
-// *
-// * @sa              complex::operator/
-// */
-//template<typename eT, typename T>
-//complex< eT > operator/(const T& lhs, complex< eT > rhs)
-//{
-//    return complex< eT >(lhs, 0) / rhs;
-//}
-//
-///*!
-// * @brief           Addition operator for an non-complex value and a complex number.
-// * @details         Calculates the sum of an non-complex value and a complex number
-// *                  by casting the non-complex to a complex number and performing the
-// *                  addition of two complex numbers.
-// *
-// * @param[in]       lhs The non-complex value on the left handside of the addition
-// *                  operator.
-// * @param[in]       rhs The complex value on the right handside of the addition
-// *                  operator.
-// *
-// * @return          A new complex number containing the result of the addition.
-// *
-// * @sa              complex::operator+
-// */
-//template<typename eT, typename T>
-//complex< eT > operator+(const T& lhs, complex< eT > rhs)
-//{
-//    return complex< eT >(lhs, 0) + rhs;
-//}
-//
-///*!
-// * @brief           Subtraction operator for an non-complex value and a complex number.
-// * @details         Calculates the difference of an non-complex value and a complex number
-// *                  by casting the non-complex to a complex number and performing the
-// *                  subtraction of two complex numbers.
-// *
-// * @param[in]       lhs The non-complex value on the left handside of the subtraction
-// *                  operator.
-// * @param[in]       rhs The complex value on the right handside of the subtraction
-// *                  operator.
-// *
-// * @return          A new complex number containing the result of the subtraction.
-// *
-// * @sa              complex::operator-
-// */
-//template<typename eT, typename T>
-//complex< eT > operator-(const T& lhs, complex< eT > rhs)
-//{
-//    return complex< eT >(lhs, 0) - rhs;
-//}
 
 /*!
  * @brief           Outstream operator overload to print the complex number in a nice

@@ -75,10 +75,10 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
      ** Check parameters                                            **
      *****************************************************************/
     // Check if the grid has same size in each dimension
-    psofft_warning_return(synthesis.rows != synthesis.cols || synthesis.rows != synthesis.lays, "%s", "all IDSOFT synthesis grid dimensions should be equal.");
+    psofft_cond_w_ret(synthesis.rows != synthesis.cols || synthesis.rows != synthesis.lays, "%s", "all IDSOFT synthesis grid dimensions should be equal.");
     
     // Check if grid has odd dimensions
-    psofft_warning_return(synthesis.rows & 1, "%s", "IDSOFT synthesis grid dimensions are not even.");
+    psofft_cond_w_ret(synthesis.rows & 1, "%s", "IDSOFT synthesis grid dimensions are not even.");
     
     // Extract bandwidth
     int bandwidth = static_cast< int >(synthesis.cols / 2);
@@ -87,11 +87,11 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
     const int bw2 = 2 * bandwidth;
     
     // Check if Fourier coefficients container dimension matches sample dimension
-    psofft_warning_return(bandwidth != fc.bandwidth, "%s", "IDSOFT Fourier coefficients container bandwidth does not match to synthesis grid bandwidth.");
+    psofft_cond_w_ret(bandwidth != fc.bandwidth, "%s", "IDSOFT Fourier coefficients container bandwidth does not match to synthesis grid bandwidth.");
     
     // print warinings for serial implementation
     #ifndef _OPENMP
-    psofft_warning(threads != 1, "%s", "compiler does not support OpenMP. Changing the number of threads for the IDSOFT has no effect.");
+    psofft_cond_w(threads != 1, "%s", "compiler does not support OpenMP. Changing the number of threads for the IDSOFT has no effect.");
     #endif
     
     /*****************************************************************

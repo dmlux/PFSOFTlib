@@ -58,8 +58,8 @@ matrix< T, if_pod_type< T > >
 {
 public:
     // typedefs
-    typedef T pod_type;                 //!< The POD type of matrix elements
-    typedef typename smart_array< pod_type >::iterator lin_iterator;
+    typedef T                                          pod_type;        //!< The POD type of matrix elements
+    typedef typename smart_array< pod_type >::iterator lin_iterator;    //!< Linear iterator for the elements
     
     // ivars
     const smart_array< pod_type > mem;  //!< Matrix memory
@@ -360,7 +360,7 @@ inline
 vector< complex< T > > matrix< T, if_pod_type< T > >::operator*(const vector< complex< T > >& v)
 {
     typedef vector< complex< T > > cx_T_vector;
-    psofft_error(cols != v.size || v.type == cx_T_vector::ROW, "%s", "dimension mismatch in matrix-complex vector multiplication.");
+    psofft_cond_e(cols != v.size || v.type == cx_T_vector::ROW, "%s", "dimension mismatch in matrix-complex vector multiplication.");
     
     cx_T_vector result(rows, 0, v.type);
     

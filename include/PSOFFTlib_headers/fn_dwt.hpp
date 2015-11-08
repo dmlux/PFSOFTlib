@@ -63,13 +63,14 @@ template< typename T >
 inline
 void_number_type< T > quadrature_weights(vector< T >& vec)
 {
-    psofft_warning_return(vec.size & 1, "%s", "uneven vector length in DWT::quadrature_weights. ");
+    typedef T pod_type;
+    psofft_cond_w_ret(vec.size & 1, "%s", "uneven vector length in DWT::quadrature_weights. ");
     
     int i, k, bandwidth = vec.size / 2;
     for (i = 0; i < bandwidth; ++i)
     {
-        T wi  = 2.0 / bandwidth * sin(constants< T >::pi * (2.0 * i + 1.0)/(4.0 * bandwidth));
-        T sum = 0;
+        pod_type wi  = 2.0 / bandwidth * sin(constants< T >::pi * (2.0 * i + 1.0)/(4.0 * bandwidth));
+        pod_type sum = 0;
         for (k = 0; k < bandwidth; ++k)
         {
             sum += 1.0 / (2.0 * k + 1.0) * sin((2.0 * i + 1.0) * (2.0 * k + 1.0) * constants< T >::pi / (4.0 * bandwidth));
@@ -105,24 +106,26 @@ template< typename T >
 inline
 void_number_type< T > weighted_wigner_d_matrix(matrix< T >& wig, const int& bandwidth, const int& M, const int& Mp, const vector< T >& weights)
 {
+    typedef T pod_type;
+    
     // Definition of used indices and the matrix that will be returned
     int i, j, minJ = std::max(abs(M), abs(Mp));
     
-    psofft_warning_return(wig.rows != bandwidth - minJ || wig.cols != 2 * bandwidth, "%s", "dimension mismatch between input matrix and function arguments in DWT::weighted_wigner_d_matrix.");
+    psofft_cond_w_ret(wig.rows != bandwidth - minJ || wig.cols != 2 * bandwidth, "%s", "dimension mismatch between input matrix and function arguments in DWT::weighted_wigner_d_matrix.");
     
     // Compute root coefficient for the base case
-    T normFactor  = sqrt((2.0 * minJ + 1.0)/2.0);
+    pod_type normFactor  = sqrt((2.0 * minJ + 1.0)/2.0);
     for (i = 0 ; i < minJ - std::min(abs(M), abs(Mp)) ; ++i)
     {
         normFactor *= sqrt((2.0 * minJ - i) / (i + 1.0));
     }
     
     // Sin sign for the recurrence base case
-    T sinSign = (minJ == abs(M) && M >= 0 && (minJ - Mp) & 1 ? 1       : -1);
-    sinSign   = (minJ != abs(M) && Mp < 0 && (minJ - Mp) & 1 ? sinSign : -1);
+    pod_type sinSign = (minJ == abs(M) && M >= 0 && (minJ - Mp) & 1 ? 1       : -1);
+    sinSign          = (minJ != abs(M) && Mp < 0 && (minJ - Mp) & 1 ? sinSign : -1);
     
     // Powers
-    T cosPower, sinPower;
+    pod_type cosPower, sinPower;
     if (minJ == abs(M) && M >= 0)
     {
         cosPower = minJ + Mp;
@@ -145,12 +148,12 @@ void_number_type< T > weighted_wigner_d_matrix(matrix< T >& wig, const int& band
     }
     
     // Base cases and filling matrix with values
-    T cosBeta[2 * bandwidth];
+    pod_type cosBeta[2 * bandwidth];
     for (i = 0 ; i < 2 * bandwidth; ++i)
     {
         // Getting sin and cos values for the power operator
-        T sinHalfBeta = sin(0.5 * ((2.0 * i + 1.0) * constants< T >::pi) / (4.0 * bandwidth));
-        T cosHalfBeta = cos(0.5 * ((2.0 * i + 1.0) * constants< T >::pi) / (4.0 * bandwidth));
+        pod_type sinHalfBeta = sin(0.5 * ((2.0 * i + 1.0) * constants< T >::pi) / (4.0 * bandwidth));
+        pod_type cosHalfBeta = cos(0.5 * ((2.0 * i + 1.0) * constants< T >::pi) / (4.0 * bandwidth));
         
         // Store cosine values for reuse in recurrence loop
         cosBeta[i] = cos(((2.0 * i + 1.0) * constants< T >::pi) / (4.0 * bandwidth));
@@ -164,25 +167,25 @@ void_number_type< T > weighted_wigner_d_matrix(matrix< T >& wig, const int& band
     for(i = 0 ; i < bandwidth - minJ - 1; ++i)
     {
         // Recurrence coefficients
-        T c1   = 0;
+        pod_type c1   = 0;
         
         // Index for wigner function
-        T idx  = minJ + i;
+        pod_type idx  = minJ + i;
         
         // Terms in recurrence
-        T norm = sqrt((2.0 * idx + 3.0) / (2.0 * idx + 1.0));
-        T nom  = (idx + 1.0) * (2. * idx + 1.0);
-        T den  = 1.0 / sqrt(((idx + 1) * (idx + 1) - M*M) * ((idx + 1) * (idx + 1) - Mp*Mp));
+        pod_type norm = sqrt((2.0 * idx + 3.0) / (2.0 * idx + 1.0));
+        pod_type nom  = (idx + 1.0) * (2. * idx + 1.0);
+        pod_type den  = 1.0 / sqrt(((idx + 1) * (idx + 1) - M*M) * ((idx + 1) * (idx + 1) - Mp*Mp));
         
         // Fractions
-        T f1   = norm * nom * den;
-        T f2   = 0;
+        pod_type f1   = norm * nom * den;
+        pod_type f2   = 0;
         
         // Correcting undefined values from division by zero
         if (minJ + i != 0)
         {
-            T t1 = sqrt((2.0 * idx + 3.0)/(2.0 * idx - 1.0) ) * (idx + 1.0)/idx ;
-            T t2 = sqrt((idx*idx - M*M) * (idx*idx - Mp*Mp));
+            pod_type t1 = sqrt((2.0 * idx + 3.0)/(2.0 * idx - 1.0) ) * (idx + 1.0)/idx ;
+            pod_type t2 = sqrt((idx*idx - M*M) * (idx*idx - Mp*Mp));
             
             c1   = -t1 * t2 * den;
             f2   = -M*Mp / (idx * (idx + 1.));
@@ -235,24 +238,26 @@ template< typename T >
 inline
 void_number_type< T > wigner_d_matrix(matrix< T >& wig, const int& bandwidth, const int& M, const int& Mp)
 {
+    typedef T pod_type;
+    
     // Definition of used indices and the matrix that will be returned
     int i, j, minJ = std::max(abs(M), abs(Mp));
     
-    psofft_warning_return(wig.rows != bandwidth - minJ || wig.cols != 2 * bandwidth, "%s", "dimension mismatch between input matrix and function arguments in DWT::weighted_wigner_d_matrix.");
+    psofft_cond_w_ret(wig.rows != bandwidth - minJ || wig.cols != 2 * bandwidth, "%s", "dimension mismatch between input matrix and function arguments in DWT::weighted_wigner_d_matrix.");
     
     // Compute root coefficient for the base case
-    T normFactor  = sqrt((2.0 * minJ + 1.0)/2.0);
+    pod_type normFactor  = sqrt((2.0 * minJ + 1.0)/2.0);
     for (i = 0 ; i < minJ - std::min(abs(M), abs(Mp)) ; ++i)
     {
         normFactor *= sqrt((2.0 * minJ - i) / (i + 1.0));
     }
     
     // Sin sign for the recurrence base case
-    T sinSign = (minJ == abs(M) && M >= 0 && (minJ - Mp) & 1 ? 1 : -1      );
-    sinSign   = (minJ != abs(M) && Mp < 0 && (minJ - Mp) & 1 ? sinSign : -1);
+    pod_type sinSign = (minJ == abs(M) && M >= 0 && (minJ - Mp) & 1 ? 1 : -1      );
+    sinSign          = (minJ != abs(M) && Mp < 0 && (minJ - Mp) & 1 ? sinSign : -1);
     
     // Powers
-    T cosPower, sinPower;
+    pod_type cosPower, sinPower;
     if (minJ == abs(M) && M >= 0)
     {
         cosPower = minJ + Mp;
@@ -275,12 +280,12 @@ void_number_type< T > wigner_d_matrix(matrix< T >& wig, const int& bandwidth, co
     }
     
     // Base cases and filling matrix with values
-    T cosBeta[2 * bandwidth];
+    pod_type cosBeta[2 * bandwidth];
     for (i = 0 ; i < 2 * bandwidth; ++i)
     {
         // Getting sin and cos values for the power operator
-        T sinHalfBeta = sin(0.5 * ((2.0 * i + 1.0) * constants< T >::pi) / (4.0 * bandwidth));
-        T cosHalfBeta = cos(0.5 * ((2.0 * i + 1.0) * constants< T >::pi) / (4.0 * bandwidth));
+        pod_type sinHalfBeta = sin(0.5 * ((2.0 * i + 1.0) * constants< T >::pi) / (4.0 * bandwidth));
+        pod_type cosHalfBeta = cos(0.5 * ((2.0 * i + 1.0) * constants< T >::pi) / (4.0 * bandwidth));
         
         // Store cosine values for reuse in recurrence loop
         cosBeta[i] = cos(((2.0 * i + 1.0) * constants< T >::pi) / (4.0 * bandwidth));
@@ -294,19 +299,19 @@ void_number_type< T > wigner_d_matrix(matrix< T >& wig, const int& bandwidth, co
     for(i = 0 ; i < bandwidth - minJ - 1; ++i)
     {
         // Recurrence coefficients
-        T c1   = 0;
+        pod_type c1   = 0;
         
         // Index for wigner function
-        T idx  = minJ + i;
+        pod_type idx  = minJ + i;
         
         // Terms in recurrence
-        T norm = sqrt((2.0 * idx + 3.0) / (2.0 * idx + 1.0));
-        T nom  = (idx + 1.0) * (2.0 * idx + 1.0);
-        T den  = 1.0 / sqrt(((idx + 1) * (idx + 1) - M*M) * ((idx + 1) * (idx + 1) - Mp*Mp));
+        pod_type norm = sqrt((2.0 * idx + 3.0) / (2.0 * idx + 1.0));
+        pod_type nom  = (idx + 1.0) * (2.0 * idx + 1.0);
+        pod_type den  = 1.0 / sqrt(((idx + 1) * (idx + 1) - M*M) * ((idx + 1) * (idx + 1) - Mp*Mp));
         
         // Fractions
-        T f1   = norm * nom * den;
-        T f2   = 0;
+        pod_type f1   = norm * nom * den;
+        pod_type f2   = 0;
         
         // Correcting undefined values from division by zero
         if (minJ + i != 0)

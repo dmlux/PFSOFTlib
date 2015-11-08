@@ -79,10 +79,10 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
      ** Check parameters                                            **
      *****************************************************************/
     // Check if the grid has same size in each dimension
-    psofft_warning_return(sample.rows != sample.cols || sample.rows != sample.lays, "%s", "all DSOFT sample grid dimensions should be equal.");
+    psofft_cond_w_ret(sample.rows != sample.cols || sample.rows != sample.lays, "%s", "all DSOFT sample grid dimensions should be equal.");
     
     // Check if grid has odd dimensions
-    psofft_warning_return(sample.rows & 1, "%s", "DSOFT sample grid dimensions are not even.");
+    psofft_cond_w_ret(sample.rows & 1, "%s", "DSOFT sample grid dimensions are not even.");
     
     // Extract bandwidth
     const int bandwidth = static_cast< int >(sample.cols / 2);
@@ -91,11 +91,11 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
     const int bw2 = 2 * bandwidth;
     
     // Check if Fourier coefficients container dimension matches sample dimension
-    psofft_warning_return(bandwidth != fc.bandwidth, "%s", "DSOFT Fourier coefficients container bandwidth does not match to sample grid bandwidth.");
+    psofft_cond_w_ret(bandwidth != fc.bandwidth, "%s", "DSOFT Fourier coefficients container bandwidth does not match to sample grid bandwidth.");
     
     // print warinings for serial implementation
     #ifndef _OPENMP
-    psofft_warning(threads != 1, "%s", "compiler does not support OpenMP. Changing the number of threads for the DSOFT has no effect.");
+    psofft_cond_w(threads != 1, "%s", "compiler does not support OpenMP. Changing the number of threads for the DSOFT has no effect.");
     #endif
     
     /*****************************************************************
@@ -172,7 +172,7 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
             // case f_{0,-M}
             for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(bw2 - M, 0, e - s.begin());              }
             sh = dw * s;
-            for (e = sh.begin()+1; e < sh.end(); e += 2) { *e *= -1;                                        }
+            for (e = sh.begin() + 1; e < sh.end(); e += 2) { *e *= -1;                                      }
             for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), 0, -M) = norm * *e;   }
             
             // get new wigner matrix
@@ -268,7 +268,7 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
             // alter signs
             if ((M - Mp) & 1)
             {
-                for (m = dw.begin(); m != dw.end(); ++m) { access::rw(*m) *= -1;                            }
+                for (m = dw.begin(); m != dw.begin() + dw.rows * dw.cols; ++m) { *m *= -1;                  }
             }
             
             // case f_{-Mp, M}

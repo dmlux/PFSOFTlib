@@ -40,39 +40,39 @@ template<>             struct is_num_type< double >             { static const b
 template<>             struct is_num_type< long double >        { static const bool value = true;   };
 
 // check if template is true
-template< bool T, typename U = void >       struct if_true            {                             };
-template< typename U >                      struct if_true< true, U > { typedef U type;             };
+template< bool T, typename U = void >   struct if_true            {                             };
+template< typename U >                  struct if_true< true, U > { typedef U type;             };
 
 // template alias
 template< typename pod > using if_pod_type = typename if_true< is_num_type< pod >::value >::type;
 
 // forward declarations
-template< typename >                        class  complex;
+template< typename >                    class  complex;
 
 // matrix
-template< typename, typename = void >       class  matrix;
-template< typename pod_type >               class  matrix< pod_type,            if_pod_type< pod_type > >;
-template< typename pod_type >               class  matrix< complex< pod_type >, if_pod_type< pod_type > >;
+template< typename, typename = void >   class  matrix;
+template< typename pod_type >           class  matrix< pod_type,            if_pod_type< pod_type > >;
+template< typename pod_type >           class  matrix< complex< pod_type >, if_pod_type< pod_type > >;
 
 // vector
-template< typename, typename = void >       class  vector;
-template< typename pod_type >               class  vector< pod_type,            if_pod_type< pod_type > >;
-template< typename pod_type >               class  vector< complex< pod_type >, if_pod_type< pod_type > >;
+template< typename, typename = void >   class  vector;
+template< typename pod_type >           class  vector< pod_type,            if_pod_type< pod_type > >;
+template< typename pod_type >           class  vector< complex< pod_type >, if_pod_type< pod_type > >;
 
 // 3D grid
-template< typename, typename = void >       struct grid3D;
-template< typename pod_type >               struct grid3D< complex< pod_type >, if_pod_type< pod_type > >;
+template< typename, typename = void >   struct grid3D;
+template< typename pod_type >           struct grid3D< complex< pod_type >, if_pod_type< pod_type > >;
 
 // smart_array
-template< typename >                        class  smart_array;
-                                            class  stopwatch;
+template< typename >                    class  smart_array;
+                                        class  stopwatch;
 
-                                            struct DSOFTFourierCoefficients;
+                                        struct DSOFTFourierCoefficients;
 
-template< typename, typename >              struct randctx;
-template< typename, typename = void >       struct uniform_int_distribution;
-template< typename, typename = void >       struct uniform_real_distribution;
-template< typename, typename = void >       struct normal_distribution;
+template< typename, typename >          struct randctx;
+template< typename, typename = void >   struct uniform_int_distribution;
+template< typename, typename = void >   struct uniform_real_distribution;
+template< typename, typename = void >   struct normal_distribution;
 
 /*!
  * @brief       A collection of usable random engines

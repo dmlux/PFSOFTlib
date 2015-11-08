@@ -90,7 +90,7 @@
 
 /*- Debugging log -*/
 // Printing error message to the stderr console
-#define psofft_error(condition, fmt, ...)\
+#define psofft_cond_e(condition, fmt, ...)\
         do {\
             if(condition && PSOFFT_DEBUG && PSOFFT_SHOW_ERRORS) {\
                 fprintf(stderr, "** [PSOFFTLib error]   %s:%d:%s(): " fmt " **\n",\
@@ -101,7 +101,7 @@
         } while(0)
 
 // printing warning message to the stderr console
-#define psofft_warning(condition, fmt, ...)\
+#define psofft_cond_w(condition, fmt, ...)\
         do {\
             if (condition && PSOFFT_DEBUG && PSOFFT_SHOW_WARNINGS)\
                 fprintf(stderr, "** [PSOFFTLib warning] %s:%d:%s(): " fmt " **\n",\
@@ -109,7 +109,7 @@
                 );\
         } while(0)
         
-#define psofft_warning_return(condition, fmt, ...)\
+#define psofft_cond_w_ret(condition, fmt, ...)\
         do {\
             if (condition && PSOFFT_DEBUG && PSOFFT_SHOW_WARNINGS) {\
                 fprintf(stderr, "** [PSOFFTLib warning] %s:%d:%s(): " fmt " **\n",\

@@ -84,32 +84,6 @@ void for_back(unsigned int bandwidth, bool show_coefs)
     printf("Correct result:  %s\n", (equal ? "Yes" : "No"));
 }
 
-void test()
-{
-    smart_array< double > d(5), e;
-    
-    for (int i = 0; i < 5; ++i)
-    {
-        d[i] = i + 1;
-    }
-    
-    bool equal = true;
-    
-    for (int i = 0; i < 5; ++i)
-    {
-        if (d[i] != i+1)
-        {
-            equal = false;
-            break;
-        }
-    }
-    
-    if (!equal)
-    {
-        printf("not equal!\n");
-    }
-}
-
 int main(int argc, const char ** argv)
 {
     if (argc < 2)
@@ -120,8 +94,22 @@ int main(int argc, const char ** argv)
     
     int B = atoi(*(argv + 1));
     for_back(B, false);
-    
-//    test();
+
+//    matrix< double > A(3, 4);
+//    
+//    int cnt = 1;
+//    
+//    for (int i = 0; i < A.rows; ++i)
+//    {
+//        for (int j = 0; j < A.cols; ++j)
+//        {
+//            A(i, j) = cnt++;
+//        }
+//    }
+//    
+//    std::cout << "A = " << A << std::endl;
+//    A.transpose();
+//    std::cout << "A' = " << A << std::endl;
     
     return 0;
 }
