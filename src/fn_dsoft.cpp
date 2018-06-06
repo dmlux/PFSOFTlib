@@ -1,28 +1,28 @@
 //
 //  fn_dsoft.cpp
-//  PSOFFTlib
+//  PFSOFTlib
 //
 //   Created by Denis-Michael Lux on 05. November 2015.
 //
-//   This file is part of PSOFFTlib.
+//   This file is part of PFSOFTlib.
 //
-//   PSOFFTlib is free software: you can redistribute it and/or modify
+//   PFSOFTlib is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
 //   (at your option) any later version.
 //
-//   PSOFFTlib is distributed in the hope that it will be useful,
+//   PFSOFTlib is distributed in the hope that it will be useful,
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //   GNU General Public License for more details.
 //
 //   You should have received a copy of the GNU General Public License
-//   along with PSOFFTlib.  If not, see <http://www.gnu.org/licenses/>.
+//   along with PFSOFTlib.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <psofft>
+#include <pfsoft>
 
-PSOFFT_NAMESPACE(FourierTransforms)
+PFSOFT_NAMESPACE(FourierTransforms)
 
 /*!
  * @brief           The DSOFT (<b>S0</b>(3) <b>F</b>ourier <b>T</b>ransform)
@@ -79,10 +79,10 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
      ** Check parameters                                            **
      *****************************************************************/
     // Check if the grid has same size in each dimension
-    psofft_cond_w_ret(sample.rows != sample.cols || sample.rows != sample.lays, "%s", "all DSOFT sample grid dimensions should be equal.");
+    pfsoft_cond_w_ret(sample.rows != sample.cols || sample.rows != sample.lays, "%s", "all DSOFT sample grid dimensions should be equal.");
     
     // Check if grid has odd dimensions
-    psofft_cond_w_ret(sample.rows & 1, "%s", "DSOFT sample grid dimensions are not even.");
+    pfsoft_cond_w_ret(sample.rows & 1, "%s", "DSOFT sample grid dimensions are not even.");
     
     // Extract bandwidth
     const int bandwidth = static_cast< int >(sample.cols / 2);
@@ -91,11 +91,11 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
     const int bw2 = 2 * bandwidth;
     
     // Check if Fourier coefficients container dimension matches sample dimension
-    psofft_cond_w_ret(bandwidth != fc.bandwidth, "%s", "DSOFT Fourier coefficients container bandwidth does not match to sample grid bandwidth.");
+    pfsoft_cond_w_ret(bandwidth != fc.bandwidth, "%s", "DSOFT Fourier coefficients container bandwidth does not match to sample grid bandwidth.");
     
     // print warinings for serial implementation
     #ifndef _OPENMP
-    psofft_cond_w(threads != 1, "%s", "compiler does not support OpenMP. Changing the number of threads for the DSOFT has no effect.");
+    pfsoft_cond_w(threads != 1, "%s", "compiler does not support OpenMP. Changing the number of threads for the DSOFT has no effect.");
     #endif
     
     /*****************************************************************
@@ -284,4 +284,4 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
     }
 }
 
-PSOFFT_NAMESPACE_END
+PFSOFT_NAMESPACE_END

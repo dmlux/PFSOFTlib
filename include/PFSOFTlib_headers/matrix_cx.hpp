@@ -1,29 +1,29 @@
 //
 //  matrix_cx.hpp
-//  PSOFFTlib
+//  PFSOFTlib
 //
 //   Created by Denis-Michael Lux on 05. November 2015.
 //
-//   This file is part of PSOFFTlib.
+//   This file is part of PFSOFTlib.
 //
-//   PSOFFTlib is free software: you can redistribute it and/or modify
+//   PFSOFTlib is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
 //   (at your option) any later version.
 //
-//   PSOFFTlib is distributed in the hope that it will be useful,
+//   PFSOFTlib is distributed in the hope that it will be useful,
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //   GNU General Public License for more details.
 //
 //   You should have received a copy of the GNU General Public License
-//   along with PSOFFTlib.  If not, see <http://www.gnu.org/licenses/>.
+//   along with PFSOFTlib.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef PSOFFTlib_matrix_cx_hpp
-#define PSOFFTlib_matrix_cx_hpp
+#ifndef PFSOFTlib_matrix_cx_hpp
+#define PFSOFTlib_matrix_cx_hpp
 
-PSOFFT_BEGIN
+PFSOFT_BEGIN
 
 /*!
  * @brief       Matrix specialization for complex data.
@@ -282,7 +282,7 @@ inline
 const matrix< complex< T > >& matrix< complex< T >, if_pod_type< T > >::operator*=(const vector< complex< pod_type > >& v)
 {
     typedef vector< complex< pod_type > > cx_T_vector;
-    // psofft_error(v.type == cx_T_vector::ROW || cols != v.size, "%s", "Dimension mismatch in complex matrix-vector multiplication.");
+    pfsoft_cond_e(v.type == cx_T_vector::ROW || cols != v.size, "%s", "Dimension mismatch in complex matrix-vector multiplication.");
     
     // create new memory array
     smart_array< complex< pod_type > > new_mem(rows);
@@ -627,6 +627,6 @@ std::ostream& operator<<(std::ostream& o, const matrix< complex< T > >& A)
     return o;
 }
 
-PSOFFT_END
+PFSOFT_END
 
 #endif /* matrix_cx.hpp */

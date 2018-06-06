@@ -1,29 +1,29 @@
 //
 //  vector.hpp
-//  PSOFFTlib
+//  PFSOFTlib
 //
 //   Created by Denis-Michael Lux on 05. November 2015.
 //
-//   This file is part of PSOFFTlib.
+//   This file is part of PFSOFTlib.
 //
-//   PSOFFTlib is free software: you can redistribute it and/or modify
+//   PFSOFTlib is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
 //   (at your option) any later version.
 //
-//   PSOFFTlib is distributed in the hope that it will be useful,
+//   PFSOFTlib is distributed in the hope that it will be useful,
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //   GNU General Public License for more details.
 //
 //   You should have received a copy of the GNU General Public License
-//   along with PSOFFTlib.  If not, see <http://www.gnu.org/licenses/>.
+//   along with PFSOFTlib.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef PSOFFTlib_vector_cx_hpp
-#define PSOFFTlib_vector_cx_hpp
+#ifndef PFSOFTlib_vector_cx_hpp
+#define PFSOFTlib_vector_cx_hpp
 
-PSOFFT_BEGIN
+PFSOFT_BEGIN
 
 /*!
  * @ingroup    vector
@@ -307,7 +307,7 @@ template< typename T >
 inline
 vector< complex< T > > vector< complex< T >, if_pod_type< T > >::operator-(const vector< complex< pod_type > >& v)
 {
-    // psofft_error(size != v.size || type != v.type, "%s", "size mismatch in complex vector-vector subtraction.");
+    pfsoft_cond_e(size != v.size || type != v.type, "%s", "size mismatch in complex vector-vector subtraction.");
     vector< complex< pod_type > > result(size, type);
     
     size_t i;
@@ -470,6 +470,6 @@ std::ostream& operator<<(std::ostream& o, const vector< complex< S > >& v)
  * @}
  */
 
-PSOFFT_END
+PFSOFT_END
 
 #endif /* cx_vector_dec.hpp */

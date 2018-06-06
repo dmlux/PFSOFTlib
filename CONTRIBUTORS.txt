@@ -4,3 +4,4 @@
 # keep the list sorted by first names.
 
 Denis-Michael Lux
+Christian Wülker

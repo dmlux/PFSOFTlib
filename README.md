@@ -1,4 +1,4 @@
-# PSOFFTlib #
+# PFSOFTlib #
 
 This library contains a parallelized implementation of the _Discrete Fourier Transform on SO(3)_ and its inverse. The implementation uses some base types that are also included into the library. Hence the library contains an implementation of real and complex matrices, real and complex vectors as well a complex three dimensional grid. The implementation of those types contains enough functionality to perform the _DSOFT_/_iDSOFT_ and can be easily extended. All those types were implemented to reduce the number of dependencies as much as possible. To perform the discrete Fourier Transform as efficiently as possible the FFTW Library as the only dependency was used.
 

@@ -1,32 +1,32 @@
 //   Created by Denis-Michael Lux on 05. November 2015.
 //
-//   This file is part of PSOFFTlib.
+//   This file is part of PFSOFTlib.
 //
-//   PSOFFTlib is free software: you can redistribute it and/or modify
+//   PFSOFTlib is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
 //   (at your option) any later version.
 //
-//   PSOFFTlib is distributed in the hope that it will be useful,
+//   PFSOFTlib is distributed in the hope that it will be useful,
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //   GNU General Public License for more details.
 //
 //   You should have received a copy of the GNU General Public License
-//   along with PSOFFTlib.  If not, see <http://www.gnu.org/licenses/>.
+//   along with PFSOFTlib.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef PSOFFT_compiler_hpp
-#define PSOFFT_compiler_hpp
+#ifndef PFSOFT_compiler_hpp
+#define PFSOFT_compiler_hpp
 
 // Library version
-#undef  PSOFFT_MAJOR
-#define PSOFFT_MAJOR ${PSOFFT_MAJOR}
+#undef  PFSOFT_MAJOR
+#define PFSOFT_MAJOR ${PFSOFT_MAJOR}
 
-#undef  PSOFFT_MINOR
-#define PSOFFT_MINOR ${PSOFFT_MINOR}
+#undef  PFSOFT_MINOR
+#define PFSOFT_MINOR ${PFSOFT_MINOR}
 
-#undef  PSOFFT_PATCH
-#define PSOFFT_PATCH ${PSOFFT_PATCH}
+#undef  PFSOFT_PATCH
+#define PFSOFT_PATCH ${PFSOFT_PATCH}
 
 // Define the default number of used threads for multithreaded parts
 #ifdef _OPENMP
@@ -36,18 +36,18 @@
 
     // Number of default used threads is the max
     // number of possible threads
-    #undef  PSOFFT_MAX_THREADS
-    #define PSOFFT_MAX_THREADS omp_get_max_threads()
+    #undef  PFSOFT_MAX_THREADS
+    #define PFSOFT_MAX_THREADS omp_get_max_threads()
 #else
 
     // setting the number of default used threads for
     // multithreaded parts to 1
-    #undef  PSOFFT_MAX_THREADS
-    #define PSOFFT_MAX_THREADS 1
+    #undef  PFSOFT_MAX_THREADS
+    #define PFSOFT_MAX_THREADS 1
 #endif
 
 /*- Processor information -*/
-#define PSOFFT_PROJECT_ARCH "${CMAKE_HOST_SYSTEM_PROCESSOR}"
+#define PFSOFT_PROJECT_ARCH "${CMAKE_HOST_SYSTEM_PROCESSOR}"
 
 /*- SOFT config -*/
 // SOFT Threshold
@@ -55,45 +55,45 @@
 #define DSOFT_THRESHOLD 20
 
 /*- Namespace macros -*/
-// Macro shortcut for standard PSOFFT namespace
-#undef  PSOFFT_BEGIN
-#define PSOFFT_BEGIN           namespace psofft {
+// Macro shortcut for standard PFSOFT namespace
+#undef  PFSOFT_BEGIN
+#define PFSOFT_BEGIN           namespace pfsoft {
 
-#undef  PSOFFT_END
-#define PSOFFT_END             }
+#undef  PFSOFT_END
+#define PFSOFT_END             }
 
 // Macro for nested standard namespace.
-#define PSOFFT_NAMESPACE(a)    namespace psofft { namespace a {
+#define PFSOFT_NAMESPACE(a)    namespace pfsoft { namespace a {
     
-#undef  PSOFFT_NAMESPACE_END
-#define PSOFFT_NAMESPACE_END   }}
+#undef  PFSOFT_NAMESPACE_END
+#define PFSOFT_NAMESPACE_END   }}
 
 /*- Debugging messages -*/
 // The debug mode flag is used to determine
 // whether debug messages of methods should
 // be printed or not. What messages get printed
 // depends on the specific flags.
-#undef  PSOFFT_DEBUG
-#cmakedefine01 PSOFFT_DEBUG
+#undef  PFSOFT_DEBUG
+#cmakedefine01 PFSOFT_DEBUG
 
-// the PSOFFT_SHOW_WARNINGS flag indicates
+// the PFSOFT_SHOW_WARNINGS flag indicates
 // that warning messages should be printed
 // to console if they occure in execution.
-#undef  PSOFFT_SHOW_WARNINGS
-#cmakedefine01 PSOFFT_SHOW_WARNINGS
+#undef  PFSOFT_SHOW_WARNINGS
+#cmakedefine01 PFSOFT_SHOW_WARNINGS
 
-// The PSOFFT_SHOW_ERRORS flag indicates
+// The PFSOFT_SHOW_ERRORS flag indicates
 // that error messages should be printed
 // to console if they occure in execution.
-#undef  PSOFFT_SHOW_ERRORS
-#cmakedefine01 PSOFFT_SHOW_ERRORS
+#undef  PFSOFT_SHOW_ERRORS
+#cmakedefine01 PFSOFT_SHOW_ERRORS
 
 /*- Debugging log -*/
 // Printing error message to the stderr console
-#define psofft_cond_e(condition, fmt, ...)\
+#define pfsoft_cond_e(condition, fmt, ...)\
         do {\
-            if(condition && PSOFFT_DEBUG && PSOFFT_SHOW_ERRORS) {\
-                fprintf(stderr, "** [PSOFFTLib error]   %s:%d:%s(): " fmt " **\n",\
+            if(condition && PFSOFT_DEBUG && PFSOFT_SHOW_ERRORS) {\
+                fprintf(stderr, "** [PFSOFTLib error]   %s:%d:%s(): " fmt " **\n",\
                     __FILE__, __LINE__, __func__, __VA_ARGS__\
                 );\
                 exit(EXIT_FAILURE);\
@@ -101,18 +101,18 @@
         } while(0)
 
 // printing warning message to the stderr console
-#define psofft_cond_w(condition, fmt, ...)\
+#define pfsoft_cond_w(condition, fmt, ...)\
         do {\
-            if (condition && PSOFFT_DEBUG && PSOFFT_SHOW_WARNINGS)\
-                fprintf(stderr, "** [PSOFFTLib warning] %s:%d:%s(): " fmt " **\n",\
+            if (condition && PFSOFT_DEBUG && PFSOFT_SHOW_WARNINGS)\
+                fprintf(stderr, "** [PFSOFTLib warning] %s:%d:%s(): " fmt " **\n",\
                     __FILE__, __LINE__, __func__, __VA_ARGS__\
                 );\
         } while(0)
         
-#define psofft_cond_w_ret(condition, fmt, ...)\
+#define pfsoft_cond_w_ret(condition, fmt, ...)\
         do {\
-            if (condition && PSOFFT_DEBUG && PSOFFT_SHOW_WARNINGS) {\
-                fprintf(stderr, "** [PSOFFTLib warning] %s:%d:%s(): " fmt " **\n",\
+            if (condition && PFSOFT_DEBUG && PFSOFT_SHOW_WARNINGS) {\
+                fprintf(stderr, "** [PFSOFTLib warning] %s:%d:%s(): " fmt " **\n",\
                     __FILE__, __LINE__, __func__, __VA_ARGS__\
                 );\
                 return;\
@@ -121,17 +121,17 @@
       
 /*- Attributes -*/
 // force inlining of function
-#undef  psofft_inline
-#define psofft_inline          inline __attribute__((always_inline))
+#undef  pfsoft_inline
+#define pfsoft_inline          inline __attribute__((always_inline))
         
-#undef  psofft_deprecated
-#define psofft_deprecated      __attribute__((deprecated))
+#undef  pfsoft_deprecated
+#define pfsoft_deprecated      __attribute__((deprecated))
 
-#define psofft_nonnull(...)    __attribute__((nonnull(__VA_ARGS__)))
+#define pfsoft_nonnull(...)    __attribute__((nonnull(__VA_ARGS__)))
 
-#undef  psofft_pure
-#define psofft_pure            __attribute__((pure))
+#undef  pfsoft_pure
+#define pfsoft_pure            __attribute__((pure))
 
-#define psofft_aligned(n)      __attribute__((aligned((n))))
+#define pfsoft_aligned(n)      __attribute__((aligned((n))))
 
 #endif

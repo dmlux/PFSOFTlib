@@ -1,29 +1,29 @@
 //
-//  benchmark_sofft_for.cpp
-//  PSOFFTlib
+//  benchmark_sofft_inv.cpp
+//  PFSOFTlib
 //
 //   Created by Denis-Michael Lux on 05. November 2015.
 //
-//   This file is part of PSOFFTlib.
+//   This file is part of PFSOFTlib.
 //
-//   PSOFFTlib is free software: you can redistribute it and/or modify
+//   PFSOFTlib is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
 //   (at your option) any later version.
 //
-//   PSOFFTlib is distributed in the hope that it will be useful,
+//   PFSOFTlib is distributed in the hope that it will be useful,
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //   GNU General Public License for more details.
 //
 //   You should have received a copy of the GNU General Public License
-//   along with PSOFFTlib.  If not, see <http://www.gnu.org/licenses/>.
+//   along with PFSOFTlib.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <psofft>
+#include <pfsoft>
 #include <stdio.h>
 
-using namespace psofft;
+using namespace pfsoft;
 using namespace FourierTransforms;
 
 // Main method
@@ -31,7 +31,7 @@ int main(int argc, const char** argv)
 {
     if (argc < 4)
     {
-        printf("usage: ./benchmark_sofft_for <MIN BANDWIDTH> <MAX BANDWIDTH> <RUNS PER BANDWDITH>\n");
+        printf("usage: ./benchmark_sofft_inv <MIN BANDWIDTH> <MAX BANDWIDTH> <RUNS PER BANDWDITH>\n");
         return 1;
     }
     
@@ -48,14 +48,13 @@ int main(int argc, const char** argv)
 #endif
     
     // write to file
-    FILE* fp  = fopen("benchmark_DSOFT_for.txt", "w");
-    FILE* fp2 = fopen("DSOFT_forward.dat", "w");
-    FILE* fp3 = fopen("DSOFT_runtimes.dat", "w");
-    
+    FILE* fp  = fopen("benchmark_DSOFT_inv.txt", "w");
+    FILE* fp2 = fopen("DSOFT_inverse.dat", "w");
+
+    // write output to file "benchmark_sofft_inv.txt"
 #ifdef _OPENMP
-    // print some information
     printf(     "+-----------------------------------------------------------------------------------------------------------------------------+\n");
-    printf(     "|                                                   DSOFT FORWARD BENCHMARK                                                   |\n");
+    printf(     "|                                                    DSOFT INVERSE BENCHMARK                                                  |\n");
     printf(     "+-----------------------------------------------------------------------------------------------------------------------------+\n");
     printf(     "| FROM BANDWIDTH %i TO %i WITH %i LOOP RUNS PER BANDWIDTH\n", START_BW, MAX_BW, LOOP_R);
     printf(     "| PARALLELIZED WITH %d THREADS\n", omp_get_max_threads());
@@ -63,9 +62,8 @@ int main(int argc, const char** argv)
     printf(     "|  B  | average   | fastest run (dif. to avg / %%dif)  | slowest run (dif. to avg / %%dif)  | serial    | speedup  | efficiency |\n");
     printf(     "+=====+===========+===================================+===================================+===========+==========+============+\n");
     
-    // write output to file "benchmark_sofft_for.txt"
     fprintf(fp, "+-----------------------------------------------------------------------------------------------------------------------------+\n");
-    fprintf(fp, "|                                                   DSOFT FORWARD BENCHMARK                                                   |\n");
+    fprintf(fp, "|                                                    DSOFT INVERSE BENCHMARK                                                  |\n");
     fprintf(fp, "+-----------------------------------------------------------------------------------------------------------------------------+\n");
     fprintf(fp, "| FROM BANDWIDTH %i TO %i WITH %i LOOP RUNS PER BANDWIDTH\n", START_BW, MAX_BW, LOOP_R);
     fprintf(fp, "| PARALLELIZED WITH %d THREADS\n", omp_get_max_threads());
@@ -76,7 +74,7 @@ int main(int argc, const char** argv)
     fprintf(fp2, "bandwidth\truntime\tserial\tspeedup\tefficiency\n");
 #else
     printf(     "+-----------------------------------------------------------------------------------------+\n");
-    printf(     "|                                 DSOFT FORWARD BENCHMARK                                 |\n");
+    printf(     "|                                  DSOFT INVERSE BENCHMARK                                |\n");
     printf(     "+-----------------------------------------------------------------------------------------+\n");
     printf(     "| FROM BANDWIDTH %i TO %i WITH %i LOOP RUNS PER BANDWIDTH\n", START_BW, MAX_BW, LOOP_R);
     printf(     "+=====+===========+===================================+===================================+\n");
@@ -84,34 +82,19 @@ int main(int argc, const char** argv)
     printf(     "+=====+===========+===================================+===================================+\n");
     
     fprintf(fp, "+-----------------------------------------------------------------------------------------+\n");
-    fprintf(fp, "|                                 DSOFT FORWARD BENCHMARK                                 |\n");
+    fprintf(fp, "|                                  DSOFT INVERSE BENCHMARK                                |\n");
     fprintf(fp, "+-----------------------------------------------------------------------------------------+\n");
     fprintf(fp, "| FROM BANDWIDTH %i TO %i WITH %i LOOP RUNS PER BANDWIDTH\n", START_BW, MAX_BW, LOOP_R);
     fprintf(fp, "+=====+===========+===================================+===================================+\n");
     fprintf(fp, "|  B  | average   | fastest run (dif. to avg / %%dif)  | slowest run (dif. to avg / %%dif)  |\n");
     fprintf(fp, "+=====+===========+===================================+===================================+\n");
-#endif
     
     fprintf(fp2, "bandwidth\truntime\n");
-    fprintf(fp3, "bandwidth\t");
-    
-    for (unsigned int i = 0; i < LOOP_R; ++i)
-    {
-        fprintf(fp3, "serial%i\t", i+1);
-    }
-    
-    for (unsigned int i = 0; i < LOOP_R; ++i)
-    {
-        fprintf(fp3, "parallel%i\t", i+1);
-    }
-    
-    fprintf(fp3, "\n");
+#endif
     
     // loop over all bandwidth up to MAX_BW
     for (unsigned int bandwidth = START_BW; bandwidth <= MAX_BW; ++bandwidth)
     {
-        
-        fprintf(fp3, "%i\t", bandwidth);
         
         // create a grid to fill with values
         grid3D< complex< double > > sample(2 * bandwidth);
@@ -121,7 +104,6 @@ int main(int argc, const char** argv)
         
         // creating fourier coefficients container
         DSOFTFourierCoefficients coef(bandwidth);
-        DSOFTFourierCoefficients rec_coef(bandwidth);
         
         // generate random coefficients between -1 and 1
         uniform_real_distribution< double > ctx;
@@ -131,35 +113,30 @@ int main(int argc, const char** argv)
         
         rand(coef, ctx);
         
-        // create sample
-        IDSOFT(coef, sample);
-        
         // min and max exec tiems
         double min, max;
         
-        // create variable to store execution times
+        // variable for execution times
         double times = 0;
         
 #ifdef _OPENMP
+        // get reference value of serial implementation
         double serial_ref = 0;
         for (int i = 0; i < LOOP_R; ++i)
         {
-            double serial_before = serial_ref;
             stopwatch sw = stopwatch::tic();
-            DSOFT(sample, rec_coef, 1);  // setting threads explicitly to 1
+            IDSOFT(coef, sample, 1);  // setting threads explicitly to 1
             serial_ref += sw.toc();
-            
-            fprintf(fp3, "%.6f\t", serial_ref - serial_before);
         }
         serial_ref /= LOOP_R;
 #endif
         
         for (i = 0; i < LOOP_R; ++i)
         {
-            // perform forward DSOFT transform
+            // perform inverse DSOFT transform
             // and stop time
             stopwatch sw = stopwatch::tic();
-            DSOFT(sample, rec_coef);
+            IDSOFT(coef, sample);
             double time  = sw.toc();
             
             // add to sum of time for current bandwidth
@@ -181,11 +158,7 @@ int main(int argc, const char** argv)
                 min = (time < min ? time : min);
                 max = (time > max ? time : max);
             }
-            
-            fprintf(fp3, "%.6f\t", time);
         }
-        
-        fprintf(fp3, "\n");
         
         // get average execution time
         double avg = times / LOOP_R;
@@ -220,7 +193,7 @@ int main(int argc, const char** argv)
         fprintf(fp, "   %2.2f   |", (serial_ref / max));
         fprintf(fp, "    %2.2f    |\n", (serial_ref / (omp_get_max_threads() * max)));
         
-        fprintf(fp2, "%d\t\t%15f\t\t%15f\t\t%15f\t\t%15f\n", bandwidth, avg, serial_ref, (serial_ref / avg), (serial_ref / (omp_get_max_threads() * avg)));
+        fprintf(fp2, "%d\t\t%15f\t\t%15f\t\t%15f\t\t%15f\n", bandwidth, avg, serial_ref, (serial_ref / max), (serial_ref / (omp_get_max_threads() * max)));
 #else
         printf("\n");
         fprintf(fp, "\n");
@@ -241,6 +214,4 @@ int main(int argc, const char** argv)
     // close files
     fclose(fp);
     fclose(fp2);
-    fclose(fp3);
 }
-

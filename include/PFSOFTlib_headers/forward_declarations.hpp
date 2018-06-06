@@ -1,29 +1,29 @@
 //
 //  forward_declarations.hpp
-//  PSOFFTlib
+//  PFSOFTlib
 //
 //   Created by Denis-Michael Lux on 05. November 2015.
 //
-//   This file is part of PSOFFTlib.
+//   This file is part of PFSOFTlib.
 //
-//   PSOFFTlib is free software: you can redistribute it and/or modify
+//   PFSOFTlib is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
 //   (at your option) any later version.
 //
-//   PSOFFTlib is distributed in the hope that it will be useful,
+//   PFSOFTlib is distributed in the hope that it will be useful,
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //   GNU General Public License for more details.
 //
 //   You should have received a copy of the GNU General Public License
-//   along with PSOFFTlib.  If not, see <http://www.gnu.org/licenses/>.
+//   along with PFSOFTlib.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef PSOFFTlib_forward_declarations_hpp
-#define PSOFFTlib_forward_declarations_hpp
+#ifndef PFSOFTlib_forward_declarations_hpp
+#define PFSOFTlib_forward_declarations_hpp
 
-PSOFFT_BEGIN
+PFSOFT_BEGIN
 
 // check if type is num type
 template< typename T > struct is_num_type                       { static const bool value = false;  };
@@ -101,8 +101,8 @@ public:
     /*!
      * @brief           Removes the constantness of given element
      */
-    template< typename pod_type > psofft_inline static pod_type&  rw (const pod_type& x)        { return const_cast< pod_type&  >(x); }
-    template< typename pod_type > psofft_inline static pod_type*& rwp(const pod_type* const& x) { return const_cast< pod_type*& >(x); }
+    template< typename pod_type > pfsoft_inline static pod_type&  rw (const pod_type& x)        { return const_cast< pod_type&  >(x); }
+    template< typename pod_type > pfsoft_inline static pod_type*& rwp(const pod_type* const& x) { return const_cast< pod_type*& >(x); }
 };
 
 /*!
@@ -230,6 +230,6 @@ const pod_type constants< pod_type >::pi = static_cast< pod_type >(3.14159265358
 template< typename pod_type >
 const pod_type constants< pod_type >::e = static_cast< pod_type >(2.71828182845904523536028747135266249775724709369995957496696762772407663035354759457138217852516642742746639193200305992);
 
-PSOFFT_END
+PFSOFT_END
 
 #endif /* forward_declarations.hpp */

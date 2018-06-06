@@ -6,9 +6,9 @@
 //
 //
 
-#include <psofft>
+#include <pfsoft>
 
-using namespace psofft;
+using namespace pfsoft;
 
 void for_back(unsigned int bandwidth, bool show_coefs)
 {

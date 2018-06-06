@@ -1,29 +1,29 @@
 //
 //  matrix.hpp
-//  PSOFFTlib
+//  PFSOFTlib
 //
 //   Created by Denis-Michael Lux on 05. November 2015.
 //
-//   This file is part of PSOFFTlib.
+//   This file is part of PFSOFTlib.
 //
-//   PSOFFTlib is free software: you can redistribute it and/or modify
+//   PFSOFTlib is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
 //   (at your option) any later version.
 //
-//   PSOFFTlib is distributed in the hope that it will be useful,
+//   PFSOFTlib is distributed in the hope that it will be useful,
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //   GNU General Public License for more details.
 //
 //   You should have received a copy of the GNU General Public License
-//   along with PSOFFTlib.  If not, see <http://www.gnu.org/licenses/>.
+//   along with PFSOFTlib.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef PSOFFTlib_matrix_hpp
-#define PSOFFTlib_matrix_hpp
+#ifndef PFSOFTlib_matrix_hpp
+#define PFSOFTlib_matrix_hpp
 
-PSOFFT_BEGIN
+PFSOFT_BEGIN
 
 /*!
  * @brief       Collection of classes and functions for matrices for mathematical
@@ -360,7 +360,7 @@ inline
 vector< complex< T > > matrix< T, if_pod_type< T > >::operator*(const vector< complex< T > >& v)
 {
     typedef vector< complex< T > > cx_T_vector;
-    psofft_cond_e(cols != v.size || v.type == cx_T_vector::ROW, "%s", "dimension mismatch in matrix-complex vector multiplication.");
+    pfsoft_cond_e(cols != v.size || v.type == cx_T_vector::ROW, "%s", "dimension mismatch in matrix-complex vector multiplication.");
     
     cx_T_vector result(rows, 0, v.type);
     
@@ -570,6 +570,6 @@ std::ostream& operator<<(std::ostream& o, const matrix< S >& A)
  * @}
  */
 
-PSOFFT_END
+PFSOFT_END
 
 #endif /* matrix.hpp */

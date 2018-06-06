@@ -1,29 +1,29 @@
 //
 //  fn_dwt.hpp
-//  PSOFFTlib
+//  PFSOFTlib
 //
 //   Created by Denis-Michael Lux on 05. November 2015.
 //
-//   This file is part of PSOFFTlib.
+//   This file is part of PFSOFTlib.
 //
-//   PSOFFTlib is free software: you can redistribute it and/or modify
+//   PFSOFTlib is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
 //   (at your option) any later version.
 //
-//   PSOFFTlib is distributed in the hope that it will be useful,
+//   PFSOFTlib is distributed in the hope that it will be useful,
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //   GNU General Public License for more details.
 //
 //   You should have received a copy of the GNU General Public License
-//   along with PSOFFTlib.  If not, see <http://www.gnu.org/licenses/>.
+//   along with PFSOFTlib.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef PSOFFTlib_fn_dwt_hpp
-#define PSOFFTlib_fn_dwt_hpp
+#ifndef PFSOFTlib_fn_dwt_hpp
+#define PFSOFTlib_fn_dwt_hpp
 
-PSOFFT_NAMESPACE(DWT)
+PFSOFT_NAMESPACE(DWT)
     
 /*- For more information/implementation details see fn_dwt.cpp file! -*/
 
@@ -64,7 +64,7 @@ inline
 void_number_type< T > quadrature_weights(vector< T >& vec)
 {
     typedef T pod_type;
-    psofft_cond_w_ret(vec.size & 1, "%s", "uneven vector length in DWT::quadrature_weights. ");
+    pfsoft_cond_w_ret(vec.size & 1, "%s", "uneven vector length in DWT::quadrature_weights. ");
     
     int i, k, bandwidth = vec.size / 2;
     for (i = 0; i < bandwidth; ++i)
@@ -111,7 +111,7 @@ void_number_type< T > weighted_wigner_d_matrix(matrix< T >& wig, const int& band
     // Definition of used indices and the matrix that will be returned
     int i, j, minJ = std::max(abs(M), abs(Mp));
     
-    psofft_cond_w_ret(wig.rows != bandwidth - minJ || wig.cols != 2 * bandwidth, "%s", "dimension mismatch between input matrix and function arguments in DWT::weighted_wigner_d_matrix.");
+    pfsoft_cond_w_ret(wig.rows != bandwidth - minJ || wig.cols != 2 * bandwidth, "%s", "dimension mismatch between input matrix and function arguments in DWT::weighted_wigner_d_matrix.");
     
     // Compute root coefficient for the base case
     pod_type normFactor  = sqrt((2.0 * minJ + 1.0)/2.0);
@@ -243,7 +243,7 @@ void_number_type< T > wigner_d_matrix(matrix< T >& wig, const int& bandwidth, co
     // Definition of used indices and the matrix that will be returned
     int i, j, minJ = std::max(abs(M), abs(Mp));
     
-    psofft_cond_w_ret(wig.rows != bandwidth - minJ || wig.cols != 2 * bandwidth, "%s", "dimension mismatch between input matrix and function arguments in DWT::weighted_wigner_d_matrix.");
+    pfsoft_cond_w_ret(wig.rows != bandwidth - minJ || wig.cols != 2 * bandwidth, "%s", "dimension mismatch between input matrix and function arguments in DWT::weighted_wigner_d_matrix.");
     
     // Compute root coefficient for the base case
     pod_type normFactor  = sqrt((2.0 * minJ + 1.0)/2.0);
@@ -331,6 +331,6 @@ void_number_type< T > wigner_d_matrix(matrix< T >& wig, const int& bandwidth, co
     }
 }
 
-PSOFFT_NAMESPACE_END
+PFSOFT_NAMESPACE_END
 
 #endif /* fn_dwt.hpp */

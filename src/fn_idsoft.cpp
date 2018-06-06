@@ -1,28 +1,28 @@
 //
 //  fn_idsoft.cpp
-//  PSOFFTlib
+//  PFSOFTlib
 //
 //   Created by Denis-Michael Lux on 05. November 2015.
 //
-//   This file is part of PSOFFTlib.
+//   This file is part of PFSOFTlib.
 //
-//   PSOFFTlib is free software: you can redistribute it and/or modify
+//   PFSOFTlib is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
 //   (at your option) any later version.
 //
-//   PSOFFTlib is distributed in the hope that it will be useful,
+//   PFSOFTlib is distributed in the hope that it will be useful,
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //   GNU General Public License for more details.
 //
 //   You should have received a copy of the GNU General Public License
-//   along with PSOFFTlib.  If not, see <http://www.gnu.org/licenses/>.
+//   along with PFSOFTlib.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <psofft>
+#include <pfsoft>
 
-PSOFFT_NAMESPACE(FourierTransforms)
+PFSOFT_NAMESPACE(FourierTransforms)
 
 /*!
  * @brief           The inverse DSOFT (<b>S0</b>(3) <b>F</b>ourier <b>T</b>ransform)
@@ -75,10 +75,10 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
      ** Check parameters                                            **
      *****************************************************************/
     // Check if the grid has same size in each dimension
-    psofft_cond_w_ret(synthesis.rows != synthesis.cols || synthesis.rows != synthesis.lays, "%s", "all IDSOFT synthesis grid dimensions should be equal.");
+    pfsoft_cond_w_ret(synthesis.rows != synthesis.cols || synthesis.rows != synthesis.lays, "%s", "all IDSOFT synthesis grid dimensions should be equal.");
     
     // Check if grid has odd dimensions
-    psofft_cond_w_ret(synthesis.rows & 1, "%s", "IDSOFT synthesis grid dimensions are not even.");
+    pfsoft_cond_w_ret(synthesis.rows & 1, "%s", "IDSOFT synthesis grid dimensions are not even.");
     
     // Extract bandwidth
     int bandwidth = static_cast< int >(synthesis.cols / 2);
@@ -87,11 +87,11 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
     const int bw2 = 2 * bandwidth;
     
     // Check if Fourier coefficients container dimension matches sample dimension
-    psofft_cond_w_ret(bandwidth != fc.bandwidth, "%s", "IDSOFT Fourier coefficients container bandwidth does not match to synthesis grid bandwidth.");
+    pfsoft_cond_w_ret(bandwidth != fc.bandwidth, "%s", "IDSOFT Fourier coefficients container bandwidth does not match to synthesis grid bandwidth.");
     
     // print warinings for serial implementation
     #ifndef _OPENMP
-    psofft_cond_w(threads != 1, "%s", "compiler does not support OpenMP. Changing the number of threads for the IDSOFT has no effect.");
+    pfsoft_cond_w(threads != 1, "%s", "compiler does not support OpenMP. Changing the number of threads for the IDSOFT has no effect.");
     #endif
     
     /*****************************************************************
@@ -289,4 +289,4 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
     synthesis.layer_wise_IDFT2(complex< double > (1. / (4. * bandwidth * bandwidth), 0));
 }
 
-PSOFFT_NAMESPACE_END
+PFSOFT_NAMESPACE_END
