@@ -282,7 +282,7 @@ inline
 const matrix< complex< T > >& matrix< complex< T >, if_pod_type< T > >::operator*=(const vector< complex< pod_type > >& v)
 {
     typedef vector< complex< pod_type > > cx_T_vector;
-    psofft_error(v.type == cx_T_vector::ROW || cols != v.size, "%s", "Dimension mismatch in complex matrix-vector multiplication.");
+    // psofft_error(v.type == cx_T_vector::ROW || cols != v.size, "%s", "Dimension mismatch in complex matrix-vector multiplication.");
     
     // create new memory array
     smart_array< complex< pod_type > > new_mem(rows);

@@ -44,6 +44,9 @@ void for_back(unsigned int bandwidth, bool show_coefs)
     bool equal = true;
     double epsilon = 1e-11;
     int cnt_fc = 0;
+	
+    double max_abs_error = 0.0;
+    double max_rel_error = 0.0;
     
     for (int m = 0; m < bandwidth; ++m)
     {
@@ -55,7 +58,13 @@ void for_back(unsigned int bandwidth, bool show_coefs)
                 {
                     equal = false;
                 }
-                
+
+                double abs_error = (coef(m,n,k).re - rec_coef(m,n,k).re) * (coef(m,n,k).re - rec_coef(m,n,k).re) + (coef(m,n,k).im - rec_coef(m,n,k).im) * (coef(m,n,k).im - rec_coef(m,n,k).im);
+                double rel_error = ((coef(m,n,k).re - rec_coef(m,n,k).re) * (coef(m,n,k).re - rec_coef(m,n,k).re) + (coef(m,n,k).im - rec_coef(m,n,k).im) * (coef(m,n,k).im - rec_coef(m,n,k).im)) / (coef(m,n,k).re * coef(m,n,k).re + coef(m,n,k).im * coef(m,n,k).im);                
+
+                if ( abs_error > max_abs_error ) max_abs_error = abs_error;
+                if ( rel_error > max_rel_error ) max_rel_error = rel_error;
+
                 cnt_fc++;
                 
                 if ( show_coefs )
@@ -76,12 +85,17 @@ void for_back(unsigned int bandwidth, bool show_coefs)
     {
         printf("\n");
     }
+
+    max_abs_error = sqrt (max_abs_error);
+    max_rel_error = sqrt (max_rel_error);
     
-    printf("#coefficients:   %d\n", cnt_fc);
+    //printf("#coefficients:   %d\n", cnt_fc);
     printf("Bandbreite:      %d\n", bandwidth);
     printf("DSOFT:           %.6fs\n", time);
     printf("IDSOFT:          %.6fs\n", time2);
-    printf("Correct result:  %s\n", (equal ? "Yes" : "No"));
+    //printf("Correct result:  %s\n", (equal ? "Yes" : "No"));
+    printf("max abs error:   %.2e\n", max_abs_error);
+    printf("max rel error:   %.2e\n", max_rel_error);
 }
 
 int main(int argc, const char ** argv)

@@ -17,6 +17,12 @@
 
 ADD_EXECUTABLE(
     example
-    ${PROJECT_SOURCE_DIR}/examples/example
+    ${PROJECT_SOURCE_DIR}/examples/example.cpp
 )
 TARGET_LINK_LIBRARIES( example PSOFFT )
+
+ADD_EXECUTABLE(
+    example_error
+    ${PROJECT_SOURCE_DIR}/examples/example_error.cpp
+)
+TARGET_LINK_LIBRARIES( example_error PSOFFT )

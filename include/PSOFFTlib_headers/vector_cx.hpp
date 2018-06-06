@@ -307,7 +307,7 @@ template< typename T >
 inline
 vector< complex< T > > vector< complex< T >, if_pod_type< T > >::operator-(const vector< complex< pod_type > >& v)
 {
-    psofft_error(size != v.size || type != v.type, "%s", "size mismatch in complex vector-vector subtraction.");
+    // psofft_error(size != v.size || type != v.type, "%s", "size mismatch in complex vector-vector subtraction.");
     vector< complex< pod_type > > result(size, type);
     
     size_t i;
