@@ -94,22 +94,6 @@ int main(int argc, const char ** argv)
     
     int B = atoi(*(argv + 1));
     for_back(B, false);
-
-//    matrix< double > A(3, 4);
-//    
-//    int cnt = 1;
-//    
-//    for (int i = 0; i < A.rows; ++i)
-//    {
-//        for (int j = 0; j < A.cols; ++j)
-//        {
-//            A(i, j) = cnt++;
-//        }
-//    }
-//    
-//    std::cout << "A = " << A << std::endl;
-//    A.transpose();
-//    std::cout << "A' = " << A << std::endl;
     
     return 0;
 }
