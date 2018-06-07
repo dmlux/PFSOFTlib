@@ -8,7 +8,7 @@ PFSOFTlib uses OpenMP for _DSOFT_ and _iDSOFT_ calculations to significantly red
 
 ### How do I get set up? ###
 
-* The first thing that is needed is the FFTW library. This library is written and testet with FFTW3.3.4. Therefore we recommend to install this version of the FFTW library to ensure that no special side effects occurring.
+* The first thing that is needed is the [FFTW library](http://www.fftw.org). This library is written and testet with FFTW3.3.4. Therefore we recommend to install this version of the FFTW library to ensure that no special side effects occurring.
 
 * If the FFTW is installed on the system CMake can create either a unix makefile or a project file for the IDE of your choice. 
 
