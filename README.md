@@ -10,7 +10,7 @@ PFSOFTlib uses OpenMP for _DSOFT_ and _iDSOFT_ calculations to significantly red
 
 * The first thing that is needed is the [FFTW library](http://www.fftw.org). This library is written and testet with FFTW3.3.4. Therefore we recommend to install this version of the FFTW library to ensure that no special side effects occurring.
 
-* If the FFTW is installed on the system CMake can create either a unix makefile or a project file for the IDE of your choice. 
+* If the FFTW is installed on the system [CMake](https://cmake.org) can create either a unix makefile or a project file for the IDE of your choice. 
 
 On macOS you have to make sure the g++ compiler is used for compiling the library, otherwise the OpenMP support is not provided. To change the compiler for the project, clone the PFSOFTlib from the repository and create a new directory for the project files. Navigate to the project folder and change the CXX environment variable via
 
