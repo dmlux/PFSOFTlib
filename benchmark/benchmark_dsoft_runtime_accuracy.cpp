@@ -128,6 +128,8 @@ int main(int argc, const char** argv)
     // run loop run for all number of available threads
     for (threads = 2; threads <= omp_get_max_threads(); ++threads)
     {
+        rand(coef, ctx);
+        
         // inverse transformation
         sw_inv = stopwatch::tic();
         IDSOFT(coef, sample, threads);
