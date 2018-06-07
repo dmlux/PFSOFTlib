@@ -261,7 +261,19 @@ template< typename U >
 inline
 vector< complex< T >, if_pod_type< T > >::operator vector< complex< U > > () const
 {
-    vector< complex< U > > result(size, type);
+    typedef vector< complex< U > > vector_cx_U;
+    typedef vector< complex< T > > vector_cx_T;
+    
+    vector< complex< U > > result(size);
+    
+    if (type == vector_cx_T::ROW)
+    {
+        access::rw(result.type) = vector_cx_U::ROW;
+    }
+    else
+    {
+        access::rw(result.type) = vector_cx_U::COLUMN;
+    }
     
     size_t i;
     for (i = 0; i < size; ++i)
