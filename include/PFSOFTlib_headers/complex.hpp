@@ -94,6 +94,8 @@ public:
     template< typename U > inline const complex< T >& operator+=(const U& rhs);
     template< typename U > inline const complex< T >& operator-=(const U& rhs);
     template< typename U > inline const complex< T >& operator*=(const U& rhs);
+    
+    template< typename U > inline                     operator complex< U >() const;
 };
 
 
@@ -571,6 +573,17 @@ const complex< T >& complex< T >::operator*=(const U& rhs)
         *this *= c;
     }
     return *this;
+}
+
+/**
+ *
+ */
+template< typename T >
+template< typename U >
+inline
+complex< T >::operator complex< U >() const
+{
+    return complex< U >(static_cast< U >(re), static_cast< U >(im));
 }
 
 /*!

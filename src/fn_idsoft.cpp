@@ -97,8 +97,8 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
     /*****************************************************************
      ** M = 0, M' = 0                                               **
      *****************************************************************/
-    matrix< double > d(bandwidth, 2 * bandwidth);
-    DWT::wigner_d_matrix< double >(d, bandwidth, 0, 0);
+    matrix< long double > d(bandwidth, 2 * bandwidth);
+    DWT::wigner_d_matrix< long double >(d, bandwidth, 0, 0);
     
     d *= -1;
     d.transpose();
@@ -111,7 +111,7 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
     // defining needed indices
     int MMp, M, Mp;
     vector< complex< double > >::iterator e;
-    matrix< double >::lin_iterator m;
+    matrix< long double >::lin_iterator m;
     
     // inverse DWT for M = 0, M' = 0
     for (e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth-(sh.end()-e), 0, 0);                }
@@ -127,8 +127,8 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
         #pragma omp for private(M, d, s, sh, e) schedule(dynamic) nowait
         for (M = 1; M < bandwidth; ++M)
         {
-            d  = matrix< double >(bandwidth - M, 2 * bandwidth);
-            DWT::wigner_d_matrix< double >(d, bandwidth, M, 0);
+            d  = matrix< long double >(bandwidth - M, 2 * bandwidth);
+            DWT::wigner_d_matrix< long double >(d, bandwidth, M, 0);
             
             d *= -1;
             d.transpose();
@@ -170,8 +170,8 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
             for (e = s.begin() ; e != s.end() ; ++e)  { synthesis(bw2 - M, 0, e - s.begin()) = *e;          }
             
             // get new wigner matrix
-            d  = matrix< double >(bandwidth - M, 2 * bandwidth);
-            DWT::wigner_d_matrix< double >(d, bandwidth, M, M);
+            d  = matrix< long double >(bandwidth - M, 2 * bandwidth);
+            DWT::wigner_d_matrix< long double >(d, bandwidth, M, M);
             
             d *= -1;
             d.transpose();
@@ -220,8 +220,8 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
             Mp = j > i ? bandwidth - j : j    ;
             
             // get new wigner d-matrix
-            d  = matrix< double >(bandwidth - std::max(abs(M), abs(Mp)), 2 * bandwidth);
-            DWT::wigner_d_matrix< double >(d, bandwidth, M, Mp);
+            d  = matrix< long double >(bandwidth - std::max(abs(M), abs(Mp)), 2 * bandwidth);
+            DWT::wigner_d_matrix< long double >(d, bandwidth, M, Mp);
             d.transpose();
             
             sh = vector< complex< double > >(d.cols, vector< complex< double > >::COLUMN);

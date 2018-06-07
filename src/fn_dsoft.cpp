@@ -106,10 +106,10 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
     /*****************************************************************
      ** M = 0, M' = 0                                               **
      *****************************************************************/
-    vector< double > weights(2 * bandwidth);
-    DWT::quadrature_weights< double >(weights);
+    vector< long double > weights(2 * bandwidth);
+    DWT::quadrature_weights< long double >(weights);
     
-    matrix< double > dw(bandwidth, 2 * bandwidth);
+    matrix< long double > dw(bandwidth, 2 * bandwidth);
     DWT::weighted_wigner_d_matrix(dw, bandwidth, 0, 0, weights);
     dw *= -1;
     
@@ -121,7 +121,7 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
     // defining needed indices
     int MMp, M, Mp;
     vector< complex< double > >::iterator e;
-    matrix< double >::lin_iterator m;
+    matrix< long double >::lin_iterator m;
     
     // DWT for M = 0, M' = 0
     for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(0, 0, e - s.begin());                            }

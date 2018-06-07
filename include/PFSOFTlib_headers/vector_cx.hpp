@@ -99,6 +99,9 @@ public:
     
     inline       vector< complex< pod_type > >  operator-(const vector< complex< pod_type > >& v);
     
+    template< typename U >
+    inline                                      operator vector< complex< U > > () const;
+    
     inline       complex< pod_type >&           operator[](const size_t& idx);
     inline const complex< pod_type >&           operator[](const size_t& idx) const;
     
@@ -248,6 +251,22 @@ vector< complex< T > > vector< complex< T >, if_pod_type< T > >::operator-()
     for (i = 0; i < size; ++i)
     {
         result[i] = - mem[i];
+    }
+    
+    return result;
+}
+
+template< typename T >
+template< typename U >
+inline
+vector< complex< T >, if_pod_type< T > >::operator vector< complex< U > > () const
+{
+    vector< complex< U > > result(size, type);
+    
+    size_t i;
+    for (i = 0; i < size; ++i)
+    {
+        result[i] = static_cast< complex< U > >(mem[i]);
     }
     
     return result;
