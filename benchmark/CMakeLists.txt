@@ -16,23 +16,26 @@
 #   along with PFSOFT.  If not, see <http://www.gnu.org/licenses/>.
 
 # Creating binary and linking library
-ADD_EXECUTABLE(         benchmark_dsoft_for ${PROJECT_SOURCE_DIR}/benchmark/benchmark_dsoft_for.cpp                       )
-TARGET_LINK_LIBRARIES(  benchmark_dsoft_for PFSOFT                                                                        )
+ADD_EXECUTABLE(         benchmark_dsoft_for ${PROJECT_SOURCE_DIR}/benchmark/benchmark_dsoft_for.cpp                           )
+TARGET_LINK_LIBRARIES(  benchmark_dsoft_for PFSOFT                                                                            )
 
-ADD_EXECUTABLE(         benchmark_dsoft_for_speedup ${PROJECT_SOURCE_DIR}/benchmark/benchmark_dsoft_for_speedup.cpp       )
-TARGET_LINK_LIBRARIES(  benchmark_dsoft_for_speedup PFSOFT                                                                )
+ADD_EXECUTABLE(         benchmark_dsoft_for_speedup ${PROJECT_SOURCE_DIR}/benchmark/benchmark_dsoft_for_speedup.cpp           )
+TARGET_LINK_LIBRARIES(  benchmark_dsoft_for_speedup PFSOFT                                                                    )
 
-ADD_EXECUTABLE(         benchmark_dsoft_for_efficiency ${PROJECT_SOURCE_DIR}/benchmark/benchmark_dsoft_for_efficiency.cpp )
-TARGET_LINK_LIBRARIES(  benchmark_dsoft_for_efficiency PFSOFT                                                             )
+ADD_EXECUTABLE(         benchmark_dsoft_for_efficiency ${PROJECT_SOURCE_DIR}/benchmark/benchmark_dsoft_for_efficiency.cpp     )
+TARGET_LINK_LIBRARIES(  benchmark_dsoft_for_efficiency PFSOFT                                                                 )
 
-ADD_EXECUTABLE(         benchmark_dsoft_inv ${PROJECT_SOURCE_DIR}/benchmark/benchmark_dsoft_inv.cpp                       )
-TARGET_LINK_LIBRARIES(  benchmark_dsoft_inv PFSOFT                                                                        )
+ADD_EXECUTABLE(         benchmark_dsoft_inv ${PROJECT_SOURCE_DIR}/benchmark/benchmark_dsoft_inv.cpp                           ) 
+TARGET_LINK_LIBRARIES(  benchmark_dsoft_inv PFSOFT                                                                            )
 
-ADD_EXECUTABLE(         benchmark_dsoft_inv_speedup ${PROJECT_SOURCE_DIR}/benchmark/benchmark_dsoft_inv_speedup.cpp       )
-TARGET_LINK_LIBRARIES(  benchmark_dsoft_inv_speedup PFSOFT                                                                )
+ADD_EXECUTABLE(         benchmark_dsoft_inv_speedup ${PROJECT_SOURCE_DIR}/benchmark/benchmark_dsoft_inv_speedup.cpp           )
+TARGET_LINK_LIBRARIES(  benchmark_dsoft_inv_speedup PFSOFT                                                                    )
 
-ADD_EXECUTABLE(         benchmark_dsoft_inv_efficiency ${PROJECT_SOURCE_DIR}/benchmark/benchmark_dsoft_inv_efficiency.cpp )
-TARGET_LINK_LIBRARIES(  benchmark_dsoft_inv_efficiency PFSOFT                                                             )
+ADD_EXECUTABLE(         benchmark_dsoft_inv_efficiency ${PROJECT_SOURCE_DIR}/benchmark/benchmark_dsoft_inv_efficiency.cpp     )
+TARGET_LINK_LIBRARIES(  benchmark_dsoft_inv_efficiency PFSOFT                                                                 )
 
-ADD_EXECUTABLE(         benchmark_dwt_accuracy ${PROJECT_SOURCE_DIR}/benchmark/benchmark_dwt_accuracy.cpp                 )
-TARGET_LINK_LIBRARIES(  benchmark_dwt_accuracy PFSOFT                                                                     )
+ADD_EXECUTABLE(         benchmark_dwt_accuracy ${PROJECT_SOURCE_DIR}/benchmark/benchmark_dwt_accuracy.cpp                     )
+TARGET_LINK_LIBRARIES(  benchmark_dwt_accuracy PFSOFT                                                                         )
+
+ADD_EXECUTABLE(         benchmark_dsoft_runtime_accuracy ${PROJECT_SOURCE_DIR}/benchmark/benchmark_dsoft_runtime_accuracy.cpp )
+TARGET_LINK_LIBRARIES(  benchmark_dsoft_runtime_accuracy PFSOFT                                                               )
