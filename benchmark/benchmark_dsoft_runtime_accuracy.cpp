@@ -111,42 +111,43 @@ int main(int argc, const char** argv)
     
     // create sample
     // get reference value of serial implementation
+    printf("| Threads:           %d\n", 1);
+    
     stopwatch sw_inv = stopwatch::tic();
     IDSOFT(coef, sample, 1);
     double serial_inv_ref = sw_inv.toc();
+    printf("| IDSOFT:            %.6fs\n", serial_inv_ref);
     
     stopwatch sw_for = stopwatch::tic();
     DSOFT(sample, rec_coef, 1);
     double serial_for_ref = sw_for.toc();
-    
-    printf("| Threads:           %d\n", 1);
     printf("| DSOFT:             %.6fs\n", serial_for_ref);
-    printf("| IDSOFT:            %.6fs\n", serial_inv_ref);
+    
     print_error(coef, rec_coef);
     printf("+--------------------------------------------------------------------------------------+\n");
     
     // run loop run for all number of available threads
     for (threads = 2; threads <= omp_get_max_threads(); ++threads)
     {
+        printf("| Threads:           %d\n", threads);
         rand(coef, ctx);
         
         // inverse transformation
         sw_inv = stopwatch::tic();
         IDSOFT(coef, sample, threads);
         double inv_runtime = sw_inv.toc();
+        printf("| IDSOFT:            %.6fs\n", inv_runtime);
+        printf("| Speedup IDSOFT:    %.6fs\n", serial_inv_ref / inv_runtime);
+        printf("| Efficiency IDSOFT: %.6fs\n", (serial_inv_ref / inv_runtime) / threads);
         
         // forward transformation
         sw_for = stopwatch::tic();
         DSOFT(sample, rec_coef, threads);
         double for_runtime = sw_for.toc();
-        
-        printf("| Threads:           %d\n", threads);
         printf("| DSOFT:             %.6fs\n", for_runtime);
-        printf("| IDSOFT:            %.6fs\n", inv_runtime);
         printf("| Speedup DSOFT:     %.6fs\n", serial_for_ref / for_runtime);
-        printf("| Speedup IDSOFT:    %.6fs\n", serial_inv_ref / inv_runtime);
         printf("| Efficiency DSOFT:  %.6fs\n", (serial_for_ref / for_runtime) / threads);
-        printf("| Efficiency IDSOFT: %.6fs\n", (serial_inv_ref / inv_runtime) / threads);
+        
         print_error(coef, rec_coef);
         printf("+--------------------------------------------------------------------------------------+\n");
     }
