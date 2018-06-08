@@ -66,13 +66,21 @@ int main(int argc, const char** argv)
     
     // run benchmark if multithreading is enabled
 #ifdef _OPENMP
+    int start_threads = 1;
+    int BW = 16;
+    
     if (argc < 2)
     {
-        printf("usage: ./benchmark_sofft_inv_speedup <BANDWIDTH>\n");
+        printf("usage: ./benchmark_sofft_inv_speedup <BANDWIDTH> [<MINIMAL NUMBER OF THREADS>]\n");
         return 1;
     }
     
-    int BW = atoi(argv[1]);
+    if (argc == 2)
+    {
+        BW = atoi(argv[1]);
+    } else if (argc == 3) {
+        start_threads = atoi(argv[2]) < 2 ? 2 : atoi(argv[2]);
+    }
     
     // To make things fair, we run omp once for startup. This will avoid
     // initialization time later on:
@@ -113,11 +121,13 @@ int main(int argc, const char** argv)
     // get reference value of serial implementation
     printf("| Threads:           %d\n", 1);
     
+    // compute grid from coefficients
     stopwatch sw_inv = stopwatch::tic();
     IDSOFT(coef, sample, 1);
     double serial_inv_ref = sw_inv.toc();
     printf("| IDSOFT:            %.6fs\n", serial_inv_ref);
     
+    // compute grid back to coefficients
     stopwatch sw_for = stopwatch::tic();
     DSOFT(sample, rec_coef, 1);
     double serial_for_ref = sw_for.toc();
@@ -127,7 +137,7 @@ int main(int argc, const char** argv)
     printf("+--------------------------------------------------------------------------------------+\n");
     
     // run loop run for all number of available threads
-    for (threads = 2; threads <= omp_get_max_threads(); ++threads)
+    for (threads = start_threads; threads <= omp_get_max_threads(); ++threads)
     {
         printf("| Threads:           %d\n", threads);
         rand(coef, ctx);
