@@ -79,6 +79,7 @@ int main(int argc, const char** argv)
     {
         BW = atoi(argv[1]);
     } else if (argc == 3) {
+        BW = atoi(argv[1]);
         start_threads = atoi(argv[2]) < 2 ? 2 : atoi(argv[2]);
     }
     
