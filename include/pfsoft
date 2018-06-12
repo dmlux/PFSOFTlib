@@ -38,6 +38,9 @@
 
 /*- Compiler configuration       -*/
 #include "PFSOFTlib_headers/compiler_config.hpp"
+#include "PFSOFTlib_headers/compile_time_assertion.hpp"
+#include "PFSOFTlib_headers/int2type.hpp"
+#include "PFSOFTlib_headers/select_type.hpp"
 
 /*- Forward declarations         -*/
 #include "PFSOFTlib_headers/forward_declarations.hpp"
@@ -46,6 +49,8 @@
 #include "PFSOFTlib_headers/fftw_wrapper.hpp"
 
 /*- Classes                      -*/
+#include "PFSOFTlib_headers/small_object.hpp"
+#include "PFSOFTlib_headers/creator.hpp"
 #include "PFSOFTlib_headers/smart_array.hpp"
 #include "PFSOFTlib_headers/complex.hpp"
 #include "PFSOFTlib_headers/grid3D_cx.hpp"

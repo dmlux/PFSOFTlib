@@ -26,3 +26,9 @@ ADD_EXECUTABLE(
     ${PROJECT_SOURCE_DIR}/examples/example_error.cpp
 )
 TARGET_LINK_LIBRARIES( example_error PFSOFT )
+
+ADD_EXECUTABLE(
+    playground
+    ${PROJECT_SOURCE_DIR}/examples/playground.cpp
+)
+TARGET_LINK_LIBRARIES( playground PFSOFT )
