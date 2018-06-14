@@ -32,6 +32,7 @@
 #include <cmath>        // abs, min, max, ...
 #include <sys/time.h>   // timeval
 
+#include <cassert>      // assert
 #include <string.h>     // memcpy, memset
 
 #include <random>       // for random C++11 library

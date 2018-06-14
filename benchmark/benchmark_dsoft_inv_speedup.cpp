@@ -125,6 +125,7 @@ int main(int argc, const char** argv)
         ctx.max = +1;
         
         rand(coef, ctx);
+        IDSOFT(coef, sample, 1);
         
         // create sample
         // get reference value of serial implementation

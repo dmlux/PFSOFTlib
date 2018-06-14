@@ -106,10 +106,10 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
     /*****************************************************************
      ** M = 0, M' = 0                                               **
      *****************************************************************/
-    vector< double > weights(2 * bandwidth);
-    DWT::quadrature_weights< double >(weights);
+    vector< long double > weights(2 * bandwidth);
+    DWT::quadrature_weights< long double >(weights);
     
-    matrix< double > dw(bandwidth, 2 * bandwidth);
+    matrix< long double > dw(bandwidth, 2 * bandwidth);
     DWT::weighted_wigner_d_matrix(dw, bandwidth, 0, 0, weights);
     dw *= -1;
     
@@ -121,11 +121,11 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
     // defining needed indices
     int MMp, M, Mp;
     vector< complex< double > >::iterator e;
-    matrix< double >::lin_iterator m;
+    matrix< long double >::lin_iterator m;
     
     // DWT for M = 0, M' = 0
     for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(0, 0, e - s.begin());                            }
-    vector< complex< double > > sh = dw * s;
+    vector< complex< double > > sh = convert<double>(dw * convert<long double>(s));
     for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), 0, 0) = norm * *e;            }
     
     /*****************************************************************
@@ -146,19 +146,19 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
              *****************************************************************/
             // case f_{M,0}
             for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(0, M, e - s.begin());                    }
-            sh = dw * s;
+            sh = convert<double>(dw * convert<long double>(s));
             for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), M, 0) = norm * *e;    }
             
             // case f_{0,M}
             for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(M, 0, e - s.begin());                    }
-            sh = dw * s;
+            sh = convert<double>(dw * convert<long double>(s));
             if  (M & 1)                              { sh *= -1;                                            }
             for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), 0, M) = norm * *e;    }
             
             // case f_{-M,0}
             fliplr(dw);
             for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(0, bw2 - M, e - s.begin());              }
-            sh = dw * s;
+            sh = convert<double>(dw * convert<long double>(s));
             if (M & 1)  // if M is odd
             {
                 for (e = sh.begin(); e < sh.end(); e += 2)     { *e *= -1;                                  }
@@ -171,7 +171,7 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
             
             // case f_{0,-M}
             for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(bw2 - M, 0, e - s.begin());              }
-            sh = dw * s;
+            sh = convert<double>(dw * convert<long double>(s));
             for (e = sh.begin() + 1; e < sh.end(); e += 2) { *e *= -1;                                      }
             for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), 0, -M) = norm * *e;   }
             
@@ -181,12 +181,12 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
             
             // case f_{M, M}
             for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(M, M, e - s.begin());                    }
-            sh = dw * s;
+            sh = convert<double>(dw * convert<long double>(s));
             for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), M, M) = norm * *e;    }
             
             // case f_{-M, -M}
             for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(bw2 - M, bw2 - M, e - s.begin());        }
-            sh = dw * s;
+            sh = convert<double>(dw * convert<long double>(s));
             for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), -M, -M) = norm * *e;  }
             
             // Modify dw for the last two cases. flip matrix from left to right and negate signs of
@@ -196,12 +196,12 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
             // A little arithmetic error is occuring in the following calculation... I do not exactly know why
             // case f_{M, -M}
             for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(bw2 - M, M, e - s.begin());              }
-            sh = dw * s;
+            sh = convert<double>(dw * convert<long double>(s));
             for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), M, -M) = norm * *e;   }
             
             // case f_{-M, M}
             for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(M, bw2 - M, e - s.begin());              }
-            sh = dw * s;
+            sh = convert<double>(dw * convert<long double>(s));
             for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), -M, M) = norm * *e;   }
         }
         
@@ -228,25 +228,25 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
             
             // case f_{M, Mp}
             for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(Mp, M, e - s.begin());                   }
-            sh  = dw * s;
+            sh  = convert<double>(dw * convert<long double>(s));
             sh *= -1;
             for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), M, Mp) = norm * *e;   }
             
             // case f_{Mp, M}
             for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(M, Mp, e - s.begin());                   }
-            sh = dw * s;
+            sh = convert<double>(dw * convert<long double>(s));
             if  (!((M - Mp) & 1))                    { sh *= -1;                                            }
             for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), Mp, M) = norm * *e;   }
             
             // case f_{-M, -Mp}
             for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(bw2 - Mp, bw2 - M, e - s.begin());       }
-            sh = dw * s;
+            sh = convert<double>(dw * convert<long double>(s));
             if  (!((M - Mp) & 1))                    { sh *= -1;                                            }
             for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), -M, -Mp) = norm * *e; }
             
             // case f_{-Mp, -M}
             for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(bw2 - M, bw2 - Mp, e - s.begin());       }
-            sh  = dw * s;
+            sh  = convert<double>(dw * convert<long double>(s));
             sh *= -1;
             for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), -Mp, -M) = norm * *e; }
             
@@ -257,12 +257,12 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
             
             // case f_{Mp, -M}
             for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(bw2 - M, Mp, e - s.begin());             }
-            sh = dw * s;
+            sh = convert<double>(dw * convert<long double>(s));
             for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), Mp, -M) = norm * *e;  }
             
             // case f_{M, -Mp}
             for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(bw2 - Mp, M, e - s.begin());             }
-            sh = dw * s;
+            sh = convert<double>(dw * convert<long double>(s));
             for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), M, -Mp) = norm * *e;  }
             
             // alter signs
@@ -273,12 +273,12 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
             
             // case f_{-Mp, M}
             for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(M, bw2 - Mp, e - s.begin());             }
-            sh = dw * s;
+            sh = convert<double>(dw * convert<long double>(s));
             for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), -Mp, M) = norm * *e;  }
             
             // case f_{-M, Mp}
             for (e = s.begin() ; e != s.end() ; ++e) { *e = sample(Mp, bw2 - M, e - s.begin());             }
-            sh = dw * s;
+            sh = convert<double>(dw * convert<long double>(s));
             for (e = sh.begin(); e != sh.end(); ++e) { fc(bandwidth - (sh.end() - e), -M, Mp) = norm * *e;  }
         }
     }

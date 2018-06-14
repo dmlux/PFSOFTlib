@@ -25,6 +25,52 @@
 
 PFSOFT_NAMESPACE(FourierTransforms)
 
+template <typename T, typename U>
+inline
+matrix<T> convert(const matrix<U>& m)
+{
+    matrix<T> result(m.rows, m.cols);
+    
+    assert(m.rows == result.rows);
+    assert(m.cols == result.cols);
+    
+    for (size_t i = 0; i < result.rows; i++)
+    {
+        for (size_t j = 0; j < result.cols; j++)
+        {
+            result(i, j) = m(i, j);
+        }
+    }
+    
+    return result;
+}
+
+template <typename T, typename U>
+inline
+vector<complex<T> > convert(const vector<complex<U> >& v)
+{
+    vector<complex<T> > result(v.size);
+    
+    assert(result.size == v.size);
+    
+    if (v.type == vector<complex<U> >::ROW)
+    {
+        access::rw(result.type) = vector<complex<T> >::ROW;
+    }
+    else
+    {
+        access::rw(result.type) = vector<complex<T> >::COLUMN;
+    }
+    
+    for (size_t i = 0; i < v.size; i++)
+    {
+        access::rw(result[i].re) = static_cast<T>(v[i].re);
+        access::rw(result[i].im) = static_cast<T>(v[i].im);
+    }
+    
+    return result;
+}
+
 // Forward fast Fourier transform on SO(3)
 void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int threads = PFSOFT_MAX_THREADS);
 

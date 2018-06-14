@@ -97,8 +97,8 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
     /*****************************************************************
      ** M = 0, M' = 0                                               **
      *****************************************************************/
-    matrix< double > d(bandwidth, 2 * bandwidth);
-    DWT::wigner_d_matrix< double >(d, bandwidth, 0, 0);
+    matrix< long double > d(bandwidth, 2 * bandwidth);
+    DWT::wigner_d_matrix< long double >(d, bandwidth, 0, 0);
     
     d *= -1;
     d.transpose();
@@ -111,11 +111,11 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
     // defining needed indices
     int MMp, M, Mp;
     vector< complex< double > >::iterator e;
-    matrix< double >::lin_iterator m;
+    matrix< long double >::lin_iterator m;
     
     // inverse DWT for M = 0, M' = 0
     for (e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth-(sh.end()-e), 0, 0);                }
-    vector< complex< double > > s = d * sh;
+    vector< complex< double > > s = convert<double>(d * convert<long double>(sh));
     for (e = s.begin() ; e != s.end() ; ++e) { synthesis(0, 0, e - s.begin()) = *e;                         }
     
     /*****************************************************************
@@ -127,8 +127,8 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
         #pragma omp for private(M, d, s, sh, e) schedule(dynamic) nowait
         for (M = 1; M < bandwidth; ++M)
         {
-            d  = matrix< double >(bandwidth - M, 2 * bandwidth);
-            DWT::wigner_d_matrix< double >(d, bandwidth, M, 0);
+            d  = matrix< long double >(bandwidth - M, 2 * bandwidth);
+            DWT::wigner_d_matrix< long double >(d, bandwidth, M, 0);
             
             d *= -1;
             d.transpose();
@@ -140,12 +140,12 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
              *****************************************************************/
             // case f_{M,0}
             for (e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth - (sh.end() - e), M, 0);    }
-            s = d * sh;
+            s = convert<double>(d * convert<long double>(sh));
             for (e = s.begin() ; e != s.end() ; ++e) { synthesis(0, M, e - s.begin()) = *e;                 }
             
             // case f_{0,M}
             for (e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth - (sh.end() - e), 0, M);    }
-            if  (M & 1) { s = d * (sh * -1); } else  { s = d * sh;                                          }
+            if  (M & 1) { s = convert<double>(d * convert<long double>(sh * -1)); } else  { s = convert<double>(d * convert<long double>(sh));   }
             for (e = s.begin() ; e != s.end() ; ++e) { synthesis(M, 0, e - s.begin()) = *e;                 }
             
             flipud(d);
@@ -160,30 +160,30 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
             {
                 for (e = sh.begin() + 1; e < sh.end(); e+=2) { *e *= -1;                                    }
             }
-            s = d * sh;
+            s = convert<double>(d * convert<long double>(sh));
             for (e = s.begin() ; e != s.end() ; ++e)  { synthesis(0, bw2 - M, e - s.begin()) = *e;          }
             
             // case f_{0,-M}
             for (e = sh.begin(); e != sh.end(); ++e)  { *e = norm * fc(bandwidth - (sh.end() - e), 0, -M);  }
             for (e = sh.begin()+1; e < sh.end(); e+=2){ *e *= -1;                                           }
-            s = d * sh;
+            s = convert<double>(d * convert<long double>(sh));
             for (e = s.begin() ; e != s.end() ; ++e)  { synthesis(bw2 - M, 0, e - s.begin()) = *e;          }
             
             // get new wigner matrix
-            d  = matrix< double >(bandwidth - M, 2 * bandwidth);
-            DWT::wigner_d_matrix< double >(d, bandwidth, M, M);
+            d  = matrix< long double >(bandwidth - M, 2 * bandwidth);
+            DWT::wigner_d_matrix< long double >(d, bandwidth, M, M);
             
             d *= -1;
             d.transpose();
             
             // case f_{M,M}
             for (e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth - (sh.end() - e), M, M);    }
-            s = d * sh;
+            s = convert<double>(d * convert<long double>(sh));
             for (e = s.begin() ; e != s.end() ; ++e) { synthesis(M, M, e - s.begin()) = *e;                 }
             
             // case f_{-M,-M}
             for (e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth - (sh.end() - e), -M, -M);  }
-            s = d * sh;
+            s = convert<double>(d * convert<long double>(sh));
             for (e = s.begin() ; e != s.end() ; ++e) { synthesis(bw2 - M, bw2 - M, e - s.begin()) = *e;     }
             
             // Modify dw for the last two cases. flip matrix from left to right and negate every
@@ -193,12 +193,12 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
             // An little arithmetic error is occuring in the following calculation... I do not exactly know why...
             // case f_{M,-M}
             for (e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth - (sh.end() - e), M, -M);   }
-            s = d * sh;
+            s = convert<double>(d * convert<long double>(sh));
             for (e = s.begin() ; e != s.end() ; ++e) { synthesis(bw2 - M, M, e - s.begin()) = *e;           }
             
             // case f_{-M,M}
             for (e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth - (sh.end() - e), -M, M);   }
-            s = d * sh;
+            s = convert<double>(d * convert<long double>(sh));
             for (e = s.begin() ; e != s.end() ; ++e) { synthesis(M, bw2 - M, e - s.begin()) = *e;           }
         }
         
@@ -220,8 +220,8 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
             Mp = j > i ? bandwidth - j : j    ;
             
             // get new wigner d-matrix
-            d  = matrix< double >(bandwidth - std::max(abs(M), abs(Mp)), 2 * bandwidth);
-            DWT::wigner_d_matrix< double >(d, bandwidth, M, Mp);
+            d  = matrix< long double >(bandwidth - std::max(abs(M), abs(Mp)), 2 * bandwidth);
+            DWT::wigner_d_matrix< long double >(d, bandwidth, M, Mp);
             d.transpose();
             
             sh = vector< complex< double > >(d.cols, vector< complex< double > >::COLUMN);
@@ -229,25 +229,25 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
             // case f_{M,Mp}
             for (e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth - (sh.end() - e), M, Mp);   }
             sh *= -1;
-            s  = d * sh;
+            s  = convert<double>(d * convert<long double>(sh));
             for (e = s.begin() ; e != s.end() ; ++e) { synthesis(Mp, M, e - s.begin()) = *e;                }
             
             // case f_{Mp,M}
             for (e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth - (sh.end() - e), Mp, M);   }
             if  (!((M - Mp) & 1))                    { sh *= -1;                                            }
-            s = d * sh;
+            s = convert<double>(d * convert<long double>(sh));
             for (e = s.begin() ; e != s.end() ; ++e) { synthesis(M, Mp, e - s.begin()) = *e;                }
             
             // case f_{-M,-Mp}
             for (e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth - (sh.end() - e), -M, -Mp); }
             if  (!((M - Mp) & 1))                    { sh *= -1;                                            }
-            s = d * sh;
+            s = convert<double>(d * convert<long double>(sh));
             for (e = s.begin() ; e != s.end() ; ++e) { synthesis(bw2 - Mp, bw2 - M, e - s.begin()) = *e;    }
             
             // case f_{-Mp,-M}
             for (e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth - (sh.end() - e), -Mp, -M); }
             sh *= -1;
-            s  = d * sh;
+            s  = convert<double>(d * convert<long double>(sh));
             for (e = s.begin() ; e != s.end() ; ++e) { synthesis(bw2 - M, bw2 - Mp, e - s.begin()) = *e;    }
             
             // modify wigner d-matrix for next four cases. This just works because the weight
@@ -257,12 +257,12 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
             
             // case f_{Mp,-M}
             for (e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth - (sh.end() - e), Mp, -M);  }
-            s = d * sh;
+            s = convert<double>(d * convert<long double>(sh));
             for (e = s.begin() ; e != s.end() ; ++e) { synthesis(bw2 - M, Mp, e - s.begin()) = *e;          }
             
             // case f_{M,-Mp}
             for (e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth - (sh.end() - e), M, -Mp);  }
-            s = d * sh;
+            s = convert<double>(d * convert<long double>(sh));
             for (e = s.begin() ; e != s.end() ; ++e) { synthesis(bw2 - Mp, M, e - s.begin()) = *e;          }
             
             // alter signs
@@ -273,12 +273,12 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
             
             // case f_{-Mp,M}
             for (e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth - (sh.end() - e), -Mp, M);  }
-            s = d * sh;
+            s = convert<double>(d * convert<long double>(sh));
             for (e = s.begin() ; e != s.end() ; ++e) { synthesis(M, bw2 - Mp, e - s.begin()) = *e;          }
             
             // case f_{-M,Mp}
             for (e = sh.begin(); e != sh.end(); ++e) { *e = norm * fc(bandwidth - (sh.end() - e), -M, Mp);  }
-            s = d * sh;
+            s = convert<double>(d * convert<long double>(sh));
             for (e = s.begin() ; e != s.end() ; ++e) { synthesis(Mp, bw2 - M, e - s.begin()) = *e;          }
         }
     }
