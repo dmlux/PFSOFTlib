@@ -44,7 +44,7 @@ PFSOFT_BEGIN
 /*- Wrapper for needed library functions -*/
 extern "C"
 {
-    void uzl_fftw_layer_wise_DFT2_grid3D(int cols, int rows, int lays, double* arr)
+    void uzl_fftw_layer_wise_DFT2_grid3D(int cols, int rows, int lays, double* arr, int threads)
     {
         #ifdef _OPENMP
         
@@ -67,7 +67,7 @@ extern "C"
         }
         
         // execute plans in parallel
-        #pragma omp parallel for private(i) shared(lays, plans) schedule(dynamic)
+        #pragma omp parallel for private(i) shared(lays, plans) schedule(dynamic) num_threads(threads)
         for (i = 0; i < lays; ++i)
         {
             // execute FFT2 plan
@@ -108,7 +108,7 @@ extern "C"
         #endif
     }
     
-    void uzl_fftw_layer_wise_IDFT2_grid3D(int cols, int rows, int lays, double*  arr)
+    void uzl_fftw_layer_wise_IDFT2_grid3D(int cols, int rows, int lays, double* arr, int threads)
     {
         #ifdef _OPENMP
         
@@ -131,7 +131,7 @@ extern "C"
         }
         
         // execute plans in parallel
-        #pragma omp parallel for private(i) shared(lays, plans) schedule(dynamic)
+        #pragma omp parallel for private(i) shared(lays, plans) schedule(dynamic) num_threads(threads)
         for (i = 0; i < lays; ++i)
         {
             // execute FFT2 plan
