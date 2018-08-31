@@ -28,8 +28,8 @@ PFSOFT_BEGIN
 extern "C"
 {
     /*- FFTW FUNCTIONS -*/
-    void uzl_fftw_layer_wise_DFT2_grid3D (int cols, int rows, int lays, double* arr);
-    void uzl_fftw_layer_wise_IDFT2_grid3D(int cols, int rows, int lays, double* arr);
+    void uzl_fftw_layer_wise_DFT2_grid3D (int cols, int rows, int lays, double* arr, int threads);
+    void uzl_fftw_layer_wise_IDFT2_grid3D(int cols, int rows, int lays, double* arr, int threads);
 }
 
 PFSOFT_END
