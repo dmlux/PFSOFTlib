@@ -101,7 +101,7 @@ void DSOFT(grid3D< complex< double > > sample, DSOFTFourierCoefficients& fc, int
     /*****************************************************************
      ** FFT2 transform layers of sample grid for fixed k            **
      *****************************************************************/
-    sample.layer_wise_DFT2();
+    sample.layer_wise_DFT2(complex< double > (1.0, 0.0), threads);
     
     /*****************************************************************
      ** M = 0, M' = 0                                               **

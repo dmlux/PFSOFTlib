@@ -78,8 +78,8 @@ grid3D< complex< T >, if_pod_type< T > >
     inline       complex< pod_type >&           operator()(const size_t& row, const size_t& col, const size_t& lay);
     inline const complex< pod_type >&           operator()(const size_t& row, const size_t& col, const size_t& lay) const;
     
-    inline       void                           layer_wise_DFT2(const complex< double >& scale = complex< pod_type >(1, 0));
-    inline       void                           layer_wise_IDFT2(const complex< double >& scale = complex< pod_type >(1, 0));
+    inline       void                           layer_wise_DFT2(const complex< double >& scale = complex< pod_type >(1, 0), int threads = 1);
+    inline       void                           layer_wise_IDFT2(const complex< double >& scale = complex< pod_type >(1, 0), int threads = 1);
 };
 
 
@@ -306,7 +306,7 @@ const complex< T >& grid3D< complex< T >, if_pod_type< T > >::operator()(const s
 
 template< typename T >
 inline
-void grid3D< complex< T >, if_pod_type< T > >::layer_wise_DFT2(const complex< double >& scale)
+void grid3D< complex< T >, if_pod_type< T > >::layer_wise_DFT2(const complex< double >& scale, int threads)
 {
     // declare variables
     size_t i;
@@ -336,7 +336,7 @@ void grid3D< complex< T >, if_pod_type< T > >::layer_wise_DFT2(const complex< do
     }
     
     // perform layerwise FFT2
-    uzl_fftw_layer_wise_DFT2_grid3D(cols, rows, lays, data);
+    uzl_fftw_layer_wise_DFT2_grid3D(cols, rows, lays, data, threads);
     
     // skip if scale is default
     if (scale.re != 1 || scale.im != 0)
@@ -367,7 +367,7 @@ void grid3D< complex< T >, if_pod_type< T > >::layer_wise_DFT2(const complex< do
 
 template< typename T >
 inline
-void grid3D< complex< T >, if_pod_type< T > >::layer_wise_IDFT2(const complex< double >& scale)
+void grid3D< complex< T >, if_pod_type< T > >::layer_wise_IDFT2(const complex< double >& scale, int threads)
 {
     // declare variables
     size_t i;
@@ -397,7 +397,7 @@ void grid3D< complex< T >, if_pod_type< T > >::layer_wise_IDFT2(const complex< d
     }
     
     // perform layerwise FFT2
-    uzl_fftw_layer_wise_IDFT2_grid3D(cols, rows, lays, data);
+    uzl_fftw_layer_wise_IDFT2_grid3D(cols, rows, lays, data, threads);
     
     // skip if scale is default
     if (scale.re != 1 || scale.im != 0)

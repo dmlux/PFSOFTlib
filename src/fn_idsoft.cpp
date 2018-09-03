@@ -286,7 +286,7 @@ void IDSOFT(const DSOFTFourierCoefficients& fc, grid3D< complex< double > >& syn
     /*****************************************************************
      ** IFFT2 transform layers of input sample grid for fixed k     **
      *****************************************************************/
-    synthesis.layer_wise_IDFT2(complex< double > (1. / (4. * bandwidth * bandwidth), 0));
+    synthesis.layer_wise_IDFT2(complex< double > (1. / (4. * bandwidth * bandwidth), 0), threads);
 }
 
 PFSOFT_NAMESPACE_END
